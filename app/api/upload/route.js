@@ -12,17 +12,27 @@ export async function POST(req) {
       });
     }
 
+    // Use environment variable for token - never hardcode tokens
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    
+    if (!token) {
+      console.error("BLOB_READ_WRITE_TOKEN not configured");
+      return new Response(JSON.stringify({ error: "Upload service not configured" }), {
+        status: 500,
+      });
+    }
+
     const blob = await put(path, file, {
       access: "public",
       addRandomSuffix: false,
       allowOverwrite: true,
-      token:"vercel_blob_rw_6VzuQ5eznZovPmcP_ZgQI0i58joQEkryvb6N7yJfIt3RKUR"
+      token: token
     });
 
     return new Response(JSON.stringify({ url: blob.url }), { status: 200 });
   } catch (err) {
     console.error("Upload failed:", err);
-    return new Response(JSON.stringify({ error: "Upload failed" }), {
+    return new Response(JSON.stringify({ error: "Upload failed", details: err.message }), {
       status: 500,
     });
   }
