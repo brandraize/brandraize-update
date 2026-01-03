@@ -1,8 +1,14 @@
-import { authAdmin } from "@/configuration/firebase-admin";
-import admin from "firebase-admin";
+import { authAdmin, db } from "@/configuration/firebase-admin";
 
 export async function POST(req) {
   try {
+    if (!authAdmin || !db) {
+      return new Response(
+        JSON.stringify({ error: "Firebase service not configured" }),
+        { status: 503 }
+      );
+    }
+
     const { uid } = await req.json();
 
     if (!uid) {
@@ -11,20 +17,18 @@ export async function POST(req) {
       });
     }
 
-    // Delete from Firebase Authentication
     await authAdmin.deleteUser(uid);
-
-    // Delete from Firestore
-    const db = admin.firestore();
     await db.collection("admins").doc(uid).delete();
 
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ success: true, message: "Admin removed successfully" }),
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error removing admin:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-    });
+    console.error("Error removing admin:", error.message);
+    return new Response(
+      JSON.stringify({ error: error.message || "Failed to remove admin", code: error.code }),
+      { status: 500 }
+    );
   }
 }

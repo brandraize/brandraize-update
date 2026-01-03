@@ -3,69 +3,48 @@ import { NextResponse } from "next/server";
 const supportedLanguages = ["en", "ar"];
 
 export function middleware(request) {
-  try {
-    const { pathname } = request.nextUrl;
+  const pathname = request.nextUrl.pathname;
 
-    // Skip API routes, Next.js assets, and static files
-    if (
-      pathname.startsWith("/api/") ||
-      pathname.startsWith("/_next/") ||
-      pathname.includes(".")
-    ) {
-      return NextResponse.next();
-    }
-
-    // Handle /admin redirects to language-specific admin
-    if (
-      pathname === "/admin" ||
-      supportedLanguages.some((lang) => pathname === `/${lang}/admin`)
-    ) {
-      const langFromPath = supportedLanguages.find(
-        (lang) => pathname === `/${lang}/admin`
-      );
-
-      const langToUse =
-        langFromPath ||
-        (() => {
-          const acceptLang = request.headers.get("Accept-Language") || "";
-          const preferredLang = acceptLang.split(",")[0].split("-")[0];
-          return supportedLanguages.includes(preferredLang)
-            ? preferredLang
-            : "en";
-        })();
-
-      const redirectUrl = new URL(request.url);
-      redirectUrl.pathname = `/${langToUse}/admin/products`;
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    // Allow requests with supported language prefixes
-    if (
-      supportedLanguages.some(
-        (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
-      )
-    ) {
-      return NextResponse.next();
-    }
-
-    // Redirect root and non-language routes to preferred language
-    const acceptLang = request.headers.get("Accept-Language") || "";
-    const preferredLang = acceptLang.split(",")[0].split("-")[0];
-
-    const langToUse = supportedLanguages.includes(preferredLang)
-      ? preferredLang
-      : "en";
-
-    const redirectUrl = new URL(request.url);
-    redirectUrl.pathname = `/${langToUse}${pathname}`;
-    return NextResponse.redirect(redirectUrl);
-  } catch (error) {
-    console.error("Middleware error:", error);
-    // Return default response on error instead of crashing
+  // Skip API routes and Next.js internals
+  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
+
+  // Check if pathname has a language prefix
+  const hasLanguagePrefix = supportedLanguages.some(
+    (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
+  );
+
+  if (hasLanguagePrefix) {
+    return NextResponse.next();
+  }
+
+  // Get preferred language from Accept-Language header
+  let preferredLang = "en";
+  const acceptLanguage = request.headers.get("Accept-Language") || "";
+  if (acceptLanguage) {
+    const firstLang = acceptLanguage.split(",")[0].split("-")[0];
+    if (supportedLanguages.includes(firstLang)) {
+      preferredLang = firstLang;
+    }
+  }
+
+  // Special handling for /admin without language prefix
+  if (pathname === "/admin") {
+    return NextResponse.redirect(
+      new URL(`/${preferredLang}/admin/products`, request.url)
+    );
+  }
+
+  // Redirect all other paths to language-prefixed version
+  return NextResponse.redirect(
+    new URL(`/${preferredLang}${pathname}`, request.url)
+  );
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Match all paths except:
+    "/((?!api|_next|favicon.ico|robots.txt|sitemap.xml|public).*)",
+  ],
 };
