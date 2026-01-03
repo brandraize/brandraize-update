@@ -1,0 +1,167 @@
+/* Wrapper for marquee + particles */
+.tech-marquee-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #060f26; /* dark blue background */
+}
+
+/* Particle canvas behind everything */
+.tech-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none; /* so canvas doesn't block interactions */
+}
+
+/* Marquee base content */
+.tech-marquee {
+  position: relative;
+  z-index: 1; /* above canvas */
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
+  padding: 5rem 0; /* vertical padding */
+  background: transparent; /* transparent for particles to show through */
+  color: #fff;
+}
+
+/* Marquee content container */
+.marquee-content {
+  display: inline-flex;
+  gap: 80px; /* spacing between items */
+  font-size: 1rem; /* reset text size for icons */
+}
+
+/* Left scrolling */
+.marquee-left .marquee-content {
+  animation: scroll-left 20s linear infinite;
+}
+
+/* Right scrolling */
+.marquee-right .marquee-content {
+  animation: scroll-right 20s linear infinite;
+}
+
+/* Scroll animations */
+@keyframes scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes scroll-right {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Icon container */
+.tech-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+  color: #fff; /* default text color */
+}
+
+/* Make icons bigger */
+.tech-icon {
+  font-size: 6rem; /* larger icons */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.tech-icon:hover {
+  transform: scale(1.25);
+}
+
+/* Icon names */
+.tech-item span {
+  margin-top: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Example custom colors */
+.angular { color: #dd1b16; }
+.vue { color: #41b883; }
+.redux { color: #764abc; }
+.graphql { color: #e535ab; }
+.django { color: #092e20; }
+.flutter { color: #02569b; }
+
+.kubernetes { color: #326ce5; }
+.jenkins { color: #d33833; }
+.git { color: #f1502f; }
+.linux { color: #000; }
+
+.tensorflow { color: #ff6f00; }
+.pytorch { color: #ee4c2c; }
+.keras { color: #d00000; }
+.opencv { color: #5c3ee8; }
+
+.ai { color: #6f42c1; }
+.robot { color: #6c757d; }
+.solidity { color: #363636; }
+.vr { color: #17a2b8; }
+.cube { color: #20c997; }
+
+/* Container inside marquee to appear above particles */
+.tech-marquee .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .tech-icon {
+    font-size: 5rem;
+  }
+  .marquee-content {
+    gap: 60px;
+  }
+}
+
+@media (max-width: 992px) {
+  .tech-icon {
+    font-size: 4rem;
+  }
+  .marquee-content {
+    gap: 50px;
+  }
+  .tech-item span {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .tech-icon {
+    font-size: 3.5rem;
+  }
+  .marquee-content {
+    gap: 40px;
+  }
+  .tech-item span {
+    font-size: 0.85rem;
+  }
+  .tech-marquee {
+    padding: 3rem 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .tech-icon {
+    font-size: 3rem;
+  }
+  .marquee-content {
+    gap: 30px;
+  }
+  .tech-item span {
+    font-size: 0.75rem;
+  }
+  .tech-marquee {
+    padding: 2rem 0;
+  }
+}
