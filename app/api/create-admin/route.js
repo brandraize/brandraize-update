@@ -3,7 +3,6 @@ import admin from "firebase-admin";
 
 export async function POST(req) {
   try {
-    // Validate environment and dependencies
     if (!authAdmin || !db) {
       return new Response(
         JSON.stringify({ error: "Firebase service not configured" }),
