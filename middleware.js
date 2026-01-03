@@ -1,18 +1,10 @@
-import { NextResponse } from "next/server";
+// Middleware disabled due to Vercel edge runtime incompatibility
+// Language routing handled via app/[lang] directory structure instead
 
-// Minimal pass-through middleware for debugging
-export function middleware(request) {
-  try {
-    // Log middleware hit for debugging (check Vercel deployment logs)
-    console.log("middleware: hit", request.nextUrl.pathname);
-    return NextResponse.next();
-  } catch (err) {
-    console.error("middleware runtime error:", err?.message || err);
-    return NextResponse.next();
-  }
+export function middleware() {
+  // This export is required but kept empty to avoid edge runtime invocation
 }
 
-// Match everything so we can isolate middleware compilation/runtime
 export const config = {
-  matcher: ["/(.*)"],
+  matcher: [], // Empty matcher - disables middleware completely
 };
