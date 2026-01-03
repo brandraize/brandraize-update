@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Ensure ESM modules are not compiled to CommonJS
+  experimental: {
+    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'react-icons', 'lucide-react'],
+    // Disable automatic CommonJS conversion
+    esm: true,
+  },
+
   // Enable compression
   compress: true,
   
@@ -73,11 +80,6 @@ const nextConfig = {
         ],
       },
     ];
-  },
-
-  // Enable experimental features for better performance
-  experimental: {
-    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'react-icons', 'lucide-react'],
   },
 
   // Production optimizations

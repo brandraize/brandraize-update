@@ -1,50 +1,53 @@
 import { NextResponse } from "next/server";
 
-const supportedLanguages = ["en", "ar"];
+const LANGUAGES = ["en", "ar"];
+const DEFAULT_LANGUAGE = "en";
 
 export function middleware(request) {
   const pathname = request.nextUrl.pathname;
 
-  // Skip API routes and Next.js internals
-  if (pathname.startsWith("/api") || pathname.startsWith("/_next")) {
+  // 1. Skip API routes - never redirect
+  if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  // Check if pathname has a language prefix
-  const hasLanguagePrefix = supportedLanguages.some(
-    (lang) => pathname.startsWith(`/${lang}/`) || pathname === `/${lang}`
+  // 2. Skip internal Next.js routes
+  if (pathname.startsWith("/_next") || pathname.startsWith("/.well-known")) {
+    return NextResponse.next();
+  }
+
+  // 3. Skip file requests (has extension)
+  if (pathname.includes(".")) {
+    return NextResponse.next();
+  }
+
+  // 4. Check if path starts with language prefix
+  const pathStartsWithLang = LANGUAGES.some((lang) =>
+    pathname === `/${lang}` || pathname.startsWith(`/${lang}/`)
   );
 
-  if (hasLanguagePrefix) {
+  if (pathStartsWithLang) {
     return NextResponse.next();
   }
 
-  // Get preferred language from Accept-Language header
-  let preferredLang = "en";
-  const acceptLanguage = request.headers.get("Accept-Language") || "";
-  if (acceptLanguage) {
-    const firstLang = acceptLanguage.split(",")[0].split("-")[0];
-    if (supportedLanguages.includes(firstLang)) {
-      preferredLang = firstLang;
+  // 5. Determine preferred language
+  let lang = DEFAULT_LANGUAGE;
+  const acceptLang = request.headers.get("accept-language") || "";
+  
+  if (acceptLang) {
+    const userLang = acceptLang.split(",")[0].split("-")[0].toLowerCase();
+    if (LANGUAGES.includes(userLang)) {
+      lang = userLang;
     }
   }
 
-  // Special handling for /admin without language prefix
-  if (pathname === "/admin") {
-    return NextResponse.redirect(
-      new URL(`/${preferredLang}/admin/products`, request.url)
-    );
-  }
-
-  // Redirect all other paths to language-prefixed version
-  return NextResponse.redirect(
-    new URL(`/${preferredLang}${pathname}`, request.url)
-  );
+  // 6. Redirect to language-prefixed path
+  const newUrl = new URL(request.url);
+  newUrl.pathname = `/${lang}${pathname}`;
+  
+  return NextResponse.redirect(newUrl);
 }
 
 export const config = {
-  matcher: [
-    // Match all paths except:
-    "/((?!api|_next|favicon.ico|robots.txt|sitemap.xml|public).*)",
-  ],
+  matcher: ["/((?!api|_next|static|favicon.ico|robots.txt|sitemap.xml).*)"],
 };
