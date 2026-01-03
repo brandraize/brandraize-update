@@ -9,6 +9,7 @@ import {
   FaPaintBrush,
   FaServer,
   }
+  // hhd
  from "react-icons/fa";
  import { motion } from "framer-motion";
  import styles from "./aboutus.module.css";
