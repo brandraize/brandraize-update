@@ -39,7 +39,7 @@ export default function Navbar({ lang }) {
     },
     { href: "/about-us", label: lang === "ar" ? "من نحن" : "About Us" },
     { href: "/contact-us", label: lang === "ar" ? "اتصل بنا" : "Contact Us" },
-    { href: "/blog", label: lang === "ar" ? "المدونة" : "Blog" },
+    // { href: "/blog", label: lang === "ar" ? "المدونة" : "Blog" },
   ];
 
   if (!pathname || pathname?.startsWith(`/${lang}/admin`)) return null;

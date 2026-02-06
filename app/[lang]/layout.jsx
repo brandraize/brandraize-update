@@ -7,6 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "font-awesome/css/font-awesome.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Script from "next/script";
 import ContextProvider from "@/providers/ContextProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -153,11 +154,11 @@ export default async function RootLayout({ children, params }) {
           type="font/ttf" 
           crossOrigin="anonymous"
         />
-        <script 
+        <Script
           src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-          defer
+          strategy="afterInteractive"
           crossOrigin="anonymous"
-        ></script>
+        />
       </head>
       <body className={secondary.className}>
         <ContextProvider>
