@@ -19,7 +19,7 @@ function ParticleCanvas({ style }) {
       height = canvas.height = canvas.offsetHeight;
     };
     window.addEventListener("resize", resize);
-
+// hello aman this abdullah
     const particles = Array.from({ length: 200 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
