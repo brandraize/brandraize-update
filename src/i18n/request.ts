@@ -1,5 +1,5 @@
-import enMessages from '../locales/en/common.json';
-import arMessages from '../locales/ar/common.json';
+import enMessages from '@/locales/en/common.json';
+import arMessages from '@/locales/ar/common.json';
 import { getRequestConfig } from 'next-intl/server';
 
 const messages = {
