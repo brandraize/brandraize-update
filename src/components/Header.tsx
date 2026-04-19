@@ -146,9 +146,6 @@ export default function Navbar({ lang }: { lang: Lang }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => setMobileOpen(false), [pathname]);
-
   const isActive = (href: string) => {
     if (href === "/") return pathname === `/${lang}` || pathname === "/";
     return pathname.startsWith(`/${lang}${href}`);
@@ -159,12 +156,12 @@ export default function Navbar({ lang }: { lang: Lang }) {
       href: "/service",
       label: lang === "ar" ? "الخدمات" : "Services",
       children: [
-        { href: "/service/webdev", label: lang === "ar" ? "تطوير المواقع" : "Web Development" },
-        { href: "/service/appdev", label: lang === "ar" ? "تطوير التطبيقات" : "App Development" },
-        { href: "/service/itsolutions", label: lang === "ar" ? "حلول تكنولوجيا المعلومات" : "IT Solutions" },
-        { href: "/service/digital-marketing", label: lang === "ar" ? "التسويق الرقمي" : "Digital Marketing" },
-        { href: "/service/graphic-design", label: lang === "ar" ? "التصميم الجرافيكي" : "Graphic Designing" },
-        { href: "/service/mobile-app", label: lang === "ar" ? "تطوير تطبيقات الهاتف" : "Mobile App Development" },
+        { href: "/service", label: lang === "ar" ? "تطوير المواقع" : "Web Development" },
+        { href: "/service", label: lang === "ar" ? "تطوير تطبيقات الجوال" : "Mobile Apps" },
+        { href: "/service", label: lang === "ar" ? "حلول تكنولوجيا المعلومات" : "IT Solutions" },
+        { href: "/service", label: lang === "ar" ? "حلول ERP" : "ERP Solutions" },
+        { href: "/service", label: lang === "ar" ? "التسويق الرقمي" : "Digital Marketing" },
+        { href: "/service", label: lang === "ar" ? "تصميم UI/UX" : "UI/UX Design" },
       ],
     },
     { href: "/about", label: lang === "ar" ? "من نحن" : "About" },

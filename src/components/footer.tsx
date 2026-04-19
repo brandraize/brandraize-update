@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -20,11 +19,6 @@ export default function Footer({ lang }: FooterProps) {
   const pathname = usePathname();
   const pathLang = pathname?.split("/")?.[1];
   const resolvedLang = pathLang === "ar" || pathLang === "en" ? pathLang : (lang || "en");
-  const [currentDate, setCurrentDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setCurrentDate(new Date());
-  }, []);
 
   // Hide footer on admin pages only
   if (pathname?.startsWith(`/${resolvedLang}/admin`)) {
@@ -90,10 +84,10 @@ export default function Footer({ lang }: FooterProps) {
   // Service links array for dynamic rendering
   const serviceLinks: Array<{ key: ServiceLinkKey; path: string }> = [
     { key: "webDevelopment", path: "web-development" },
-    { key: "appDevelopment", path: "app-development" },
+    { key: "appDevelopment", path: "mobile-apps" },
     { key: "itSolutions", path: "it-solutions" },
     { key: "digitalMarketing", path: "digital-marketing" },
-    { key: "graphicDesign", path: "graphic-design" },
+    { key: "graphicDesign", path: "ui-ux-design" },
     { key: "mobileApps", path: "mobile-apps" },
   ];
 
@@ -157,10 +151,10 @@ export default function Footer({ lang }: FooterProps) {
             <Link href={`/${effectiveLang}`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
               {t.links.home}
             </Link>
-            <Link href={`/${effectiveLang}/about-us`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
+            <Link href={`/${effectiveLang}/about`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
               {t.links.about}
             </Link>
-            <Link href={`/${effectiveLang}/contact-us`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
+            <Link href={`/${effectiveLang}/contact`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
               {t.links.contact}
             </Link>
           </div>
@@ -170,7 +164,7 @@ export default function Footer({ lang }: FooterProps) {
             {serviceLinks.map((service) => (
               <Link
                 key={service.key}
-                href={`/${effectiveLang}/services/${service.path}`}
+                href={`/${effectiveLang}/service#${service.path}`}
                 className="text-white/90 no-underline text-sm font-normal hover:text-white transition-colors duration-200"
               >
                 {t.links[service.key]}
@@ -210,15 +204,7 @@ export default function Footer({ lang }: FooterProps) {
           </a>
 
           {/* Instagram */}
-          <a
-            href="https://www.instagram.com/brandraize/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="Instagram"
-          >
-            <FaInstagram size={18} />
-          </a>
+    
 
           {/* LinkedIn */}
           <a
@@ -255,7 +241,7 @@ export default function Footer({ lang }: FooterProps) {
 
           {/* Facebook */}
           <a
-            href="https://www.facebook.com/brandraize/"
+            href="https://www.facebook.com/brandraize2/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
