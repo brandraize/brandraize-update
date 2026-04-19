@@ -22,7 +22,7 @@ const content: Record<
         title: "Web & App Development",
         description:
           "Building scalable, high-performance websites and applications trusted by businesses across Saudi Arabia to deliver powerful digital experiences.",
-        image: "/services/digital.png",
+        image: "/services/Digital.png",
       },
       {
         title: "Mobile App Development",
@@ -66,7 +66,7 @@ const content: Record<
         title: "تطوير المواقع والتطبيقات",
         description:
           "بناء مواقع ويب قابلة للتطوير وتطبيقات عالية الأداء موثوقة من قبل الشركات في المملكة لتقديم تجارب رقمية متميزة.",
-        image: "/services/digital.png",
+        image: "/services/Digital.png",
       },
       {
         title: "تطوير تطبيقات الجوال",
