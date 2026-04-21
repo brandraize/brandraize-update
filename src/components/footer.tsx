@@ -204,7 +204,7 @@ export default function Footer({ lang }: FooterProps) {
           </a>
 
           {/* Instagram */}
-    
+    {/*  */}
 
           {/* LinkedIn */}
           <a
