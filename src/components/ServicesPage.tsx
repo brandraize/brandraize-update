@@ -69,12 +69,12 @@ type Copy = {
 
 const content: Record<Locale, Copy> = {
   en: {
-    eyebrow: "Next Future Services",
-    title: "Comprehensive Digital Transformation With Next Future",
+    eyebrow: "Brandraize Services",
+    title: "Comprehensive Digital Transformation With Brandraize",
     description:
       "Innovative solutions for development, design, marketing, and real estate and contracting management systems. We build connected digital ecosystems that help ambitious businesses scale with confidence.",
     primaryCta: "Discover Services",
-    secondaryCta: "Contact Us",
+    secondaryCta: "Get a Free Consultation",
     heroStats: [
       { value: "10+", label: "Core service lines" },
       { value: "End-to-end", label: "Delivery model" },
@@ -274,12 +274,12 @@ const content: Record<Locale, Copy> = {
     ],
   },
   ar: {
-    eyebrow: "خدمات نكست فيوتشر",
-    title: "تحول رقمي متكامل مع نكست فيوتشر",
+    eyebrow: "خدمات براندرايز",
+    title: "تحول رقمي متكامل مع براندرايز",
     description:
       "حلول مبتكرة للتطوير والتصميم والتسويق وأنظمة إدارة العقارات والمقاولات. نبني منظومات رقمية مترابطة تساعد الشركات الطموحة على النمو بثقة.",
     primaryCta: "اكتشف الخدمات",
-    secondaryCta: "اتصل بنا",
+    secondaryCta: "استشارة مجانية",
     heroStats: [
       { value: "+10", label: "مسارات خدمية أساسية" },
       { value: "شامل", label: "نموذج تنفيذ متكامل" },
@@ -476,17 +476,17 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
   return (
     <main
       dir={isRTL ? "rtl" : "ltr"}
-      className="relative overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(18,158,196,0.16),_transparent_34%),linear-gradient(180deg,_#03101c_0%,_#061a28_38%,_#081422_100%)] text-white"
+      className="relative overflow-hidden bg-ink-950 text-white"
     >
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute left-1/2 top-0 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[32rem] w-[32rem] -translate-x-1/2 rounded-full bg-gold-500/10 blur-3xl" />
         <div className="absolute right-0 top-40 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl" />
       </div>
 
       <section className="relative mx-auto max-w-7xl px-4 pb-16 pt-36 sm:px-6 lg:px-8 lg:pb-24 lg:pt-44">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <div>
-            <span className="inline-flex rounded-full border border-cyan-300/25 bg-cyan-300/10 px-4 py-1 text-sm tracking-[0.2em] text-cyan-100 uppercase">
+            <span className="inline-flex rounded-full border border-gold-400/25 bg-gold-400/10 px-4 py-1 text-sm tracking-[0.2em] text-gold-300 uppercase">
               {copy.eyebrow}
             </span>
             <h1 className="mt-6 max-w-4xl text-4xl font-semibold leading-tight text-white sm:text-5xl lg:text-6xl">
@@ -498,17 +498,17 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
               <Link
+                href={`/${locale}/contact`}
+                className="inline-flex items-center justify-center rounded-full bg-gold-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-gold-400"
+              >
+                {copy.secondaryCta}
+              </Link>
+              <Link
                 href={`/${locale}/service#all-services`}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#d7b03c] px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-[#e2bf55]"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
               >
                 {copy.primaryCta}
                 <ArrowRight className={`h-4 w-4 ${isRTL ? "rotate-180" : ""}`} />
-              </Link>
-              <Link
-                href={`/${locale}/contact`}
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
-              >
-                {copy.secondaryCta}
               </Link>
             </div>
 
@@ -528,10 +528,10 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
           <div className="rounded-[2rem] border border-white/10 bg-white/7 p-6 shadow-[0_30px_100px_rgba(0,0,0,0.3)] backdrop-blur-2xl sm:p-8">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/80">{copy.heroPanelTitle}</p>
+                <p className="text-sm uppercase tracking-[0.24em] text-gold-300/80">{copy.heroPanelTitle}</p>
                 <h2 className="mt-3 text-2xl font-semibold text-white">{copy.spotlightTitle}</h2>
               </div>
-              <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-cyan-100">
+              <div className="rounded-2xl border border-gold-400/20 bg-gold-400/10 p-3 text-gold-300">
                 <ShieldCheck className="h-7 w-7" />
               </div>
             </div>
@@ -541,7 +541,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
             <div className="mt-6 space-y-3">
               {copy.heroPanelPoints.map((point) => (
                 <div key={point} className="flex items-start gap-3 rounded-2xl bg-slate-950/35 px-4 py-3">
-                  <BadgeCheck className="mt-0.5 h-5 w-5 flex-none text-cyan-300" />
+                  <BadgeCheck className="mt-0.5 h-5 w-5 flex-none text-gold-400" />
                   <p className="text-sm leading-6 text-slate-100">{point}</p>
                 </div>
               ))}
@@ -552,7 +552,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
 
       <section id="all-services" className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="max-w-3xl">
-          <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/80">{copy.sectionIntro}</p>
+          <p className="text-sm uppercase tracking-[0.24em] text-gold-300/80">{copy.sectionIntro}</p>
           <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">{copy.sectionTitle}</h2>
           <p className="mt-4 text-base leading-8 text-slate-300">{copy.sectionDescription}</p>
         </div>
@@ -565,13 +565,13 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
               <article
                 id={service.slug}
                 key={service.slug}
-                className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-6 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300/30 hover:bg-[linear-gradient(180deg,rgba(16,185,229,0.14),rgba(255,255,255,0.05))]"
+                className="group rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] p-6 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-gold-400/30 hover:bg-[linear-gradient(180deg,rgba(201,160,58,0.12),rgba(255,255,255,0.05))]"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-cyan-100">
+                  <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-medium uppercase tracking-[0.22em] text-gold-300">
                     {service.kicker}
                   </span>
-                  <div className="rounded-2xl bg-cyan-300/12 p-3 text-cyan-100">
+                  <div className="rounded-2xl bg-gold-400/12 p-3 text-gold-300">
                     <Icon className="h-6 w-6" />
                   </div>
                 </div>
@@ -586,15 +586,15 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
 
       <section className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="rounded-[2rem] border border-[#d7b03c]/20 bg-[linear-gradient(180deg,rgba(215,176,60,0.15),rgba(255,255,255,0.04))] p-8">
-            <p className="text-sm uppercase tracking-[0.24em] text-[#ecd57f]">{copy.spotlightEyebrow}</p>
+          <div className="rounded-[2rem] border border-gold-500/20 bg-[linear-gradient(180deg,rgba(201,160,58,0.14),rgba(255,255,255,0.04))] p-8">
+            <p className="text-sm uppercase tracking-[0.24em] text-gold-300">{copy.spotlightEyebrow}</p>
             <h2 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">{copy.spotlightTitle}</h2>
             <p className="mt-5 text-base leading-8 text-slate-200">{copy.spotlightDescription}</p>
 
             <div className="mt-8 space-y-4">
               {copy.spotlightBullets.map((bullet) => (
                 <div key={bullet} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-slate-950/30 px-4 py-3">
-                  <BadgeCheck className="mt-0.5 h-5 w-5 flex-none text-[#f3cd56]" />
+                  <BadgeCheck className="mt-0.5 h-5 w-5 flex-none text-gold-400" />
                   <span className="text-sm leading-6 text-white/90">{bullet}</span>
                 </div>
               ))}
@@ -610,7 +610,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
                   key={highlight.title}
                   className="rounded-[1.75rem] border border-white/10 bg-white/6 p-6 backdrop-blur-xl"
                 >
-                  <div className="inline-flex rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-cyan-100">
+                  <div className="inline-flex rounded-2xl border border-gold-400/20 bg-gold-400/10 p-3 text-gold-300">
                     <Icon className="h-6 w-6" />
                   </div>
                   <h3 className="mt-5 text-xl font-semibold text-white">{highlight.title}</h3>
@@ -625,7 +625,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
       <section className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
           <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-cyan-200/80">{copy.whyTitle}</p>
+            <p className="text-sm uppercase tracking-[0.24em] text-gold-300/80">{copy.whyTitle}</p>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300">{copy.whyDescription}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -634,7 +634,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
                 key={point}
                 className="rounded-[1.5rem] border border-white/10 bg-slate-950/35 p-5 text-sm leading-7 text-slate-100"
               >
-                <div className="mb-4 inline-flex rounded-xl bg-cyan-300/10 p-2 text-cyan-200">
+                <div className="mb-4 inline-flex rounded-xl bg-gold-400/10 p-2 text-gold-300">
                   <BadgeCheck className="h-5 w-5" />
                 </div>
                 {point}
@@ -678,7 +678,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold text-white marker:hidden">
                 <span>{faq.question}</span>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-sm text-cyan-200 transition group-open:rotate-45">
+                <span className="rounded-full border border-white/10 px-3 py-1 text-sm text-gold-300 transition group-open:rotate-45">
                   +
                 </span>
               </summary>
@@ -689,7 +689,7 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
       </section>
 
       <section className="relative mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8 lg:pb-28">
-        <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(6,182,212,0.16),rgba(215,176,60,0.18))] p-8 text-white sm:p-10">
+        <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(201,160,58,0.08),rgba(201,160,58,0.22))] p-8 text-white sm:p-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-sm font-semibold uppercase tracking-[0.24em] text-white/70">{copy.spotlightEyebrow}</p>
@@ -699,13 +699,13 @@ export default function ServicesPage({ locale }: { locale: Locale }) {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
                 href={`/${locale}/contact`}
-                className="inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-900"
+                className="inline-flex items-center justify-center rounded-full bg-gold-500 px-6 py-3 text-sm font-bold text-slate-950 transition hover:bg-gold-400"
               >
                 {copy.secondaryCta}
               </Link>
               <Link
                 href={`/${locale}/service#all-services`}
-                className="inline-flex items-center justify-center rounded-full border border-slate-950/15 bg-white/55 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-white/75"
+                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/8 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
               >
                 {copy.primaryCta}
               </Link>

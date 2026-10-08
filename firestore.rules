@@ -1,0 +1,45 @@
+rules_version = '2';
+
+// Security rules for the Brandraize website and its /admin dashboard.
+// Paste this whole file into Firebase console → Firestore Database → Rules → Publish.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── WHO IS AN ADMIN ─────────────────────────────────────────────────────
+    // Put the email address(es) you log in to /admin with here, in lower case.
+    // Only these accounts can read leads or change any content.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in ['info@brandraize.com'];
+    }
+
+    // "Get a free consultation" requests. Anyone may submit one, with only these
+    // fields and sizes; nobody but an admin can read, change or delete them.
+    match /leads/{leadId} {
+      allow create: if request.resource.data.keys().hasOnly(
+            ['name', 'phone', 'email', 'service', 'message', 'locale', 'source', 'page', 'status', 'createdAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 120
+        && request.resource.data.phone is string && request.resource.data.phone.size() >= 7 && request.resource.data.phone.size() <= 30
+        && request.resource.data.email is string && request.resource.data.email.size() <= 160
+        // "service" is a reserved word in rules, so this field is read with brackets.
+        && request.resource.data['service'] is string && request.resource.data['service'].size() <= 120
+        && request.resource.data.message is string && request.resource.data.message.size() <= 2000
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt is timestamp;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Website content: readable by everyone (the public site shows it), writable by admins.
+    match /site/{docId}          { allow read: if true; allow write: if isAdmin(); }
+    match /projects/{docId}      { allow read: if true; allow write: if isAdmin(); }
+    match /testimonials/{docId}  { allow read: if true; allow write: if isAdmin(); }
+    match /clients/{docId}       { allow read: if true; allow write: if isAdmin(); }
+    match /images/{docId}        { allow read: if true; allow write: if isAdmin(); }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

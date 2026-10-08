@@ -1,259 +1,187 @@
-"use client";
 import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
+import Logo from "@/components/Logo";
+import { Mail, MapPin, Phone } from "lucide-react";
 import {
   FaFacebookF,
-  FaInstagram,
   FaLinkedinIn,
   FaTiktok,
   FaSnapchatGhost,
-  FaTwitter,
+  FaWhatsapp,
 } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import ContactLink from "@/components/ContactLink";
+import { serviceLinks, site, whatsappHref } from "@/lib/site";
 
 type FooterProps = {
-  lang?: "en" | "ar";
+  lang: "en" | "ar";
 };
 
-export default function Footer({ lang }: FooterProps) {
-  const pathname = usePathname();
-  const pathLang = pathname?.split("/")?.[1];
-  const resolvedLang = pathLang === "ar" || pathLang === "en" ? pathLang : (lang || "en");
-
-  // Hide footer on admin pages only
-  if (pathname?.startsWith(`/${resolvedLang}/admin`)) {
-    return null;
-  }
-
-  const arabicText = {
-    companyName: "براندرايز",
-    companyNameFull: "براندرايز لتقنية المعلومات",
-    description: "شركة تقنية معلومات في المملكة العربية السعودية تقدم خدمات تطوير الويب، وتطوير البرمجيات المخصصة، وحلولًا رقمية مُحسّنة لمحركات البحث، لمساعدة الشركات في جميع أنحاء المملكة على النمو بثقة.",
-    links: {
-      home: "الرئيسية",
-      services: "الخدمات",
-      webDevelopment: "تطوير المواقع",
-      appDevelopment: "تطوير التطبيقات",
-      itSolutions: "حلول تكنولوجيا المعلومات",
-      digitalMarketing: "التسويق الرقمي",
-      graphicDesign: "التصميم الجرافيكي",
-      mobileApps: "تطوير تطبيقات الهاتف",
-      about: "من نحن",
-      contact: "اتصل بنا",
-      terms: "شروط الاستخدام",
-      privacy: "سياسة الخصوصية",
-    },
-    compliance: {
-      commercialRegister: "السجل التجاري",
-      taxNumber: "الرقم الضريبي",
-    },
-    rightsReserved: "جميع الحقوق محفوظة.",
-  };
-
-  const englishText = {
-    companyName: "Brandraize",
+const content = {
+  en: {
     companyNameFull: "Brandraize Information Technology",
-    description: "An information technology company in Saudi Arabia offering web development, custom software development, and SEO-optimized digital solutions to help businesses across the Kingdom grow with confidence.",
+    description:
+      "An information technology company in Saudi Arabia offering web development, custom software, and digital marketing to help businesses across the Kingdom grow with confidence.",
+    services: "Services",
+    company: "Company",
+    contact: "Contact",
     links: {
       home: "Home",
-      services: "Services",
-      webDevelopment: "Web Development",
-      appDevelopment: "App Development",
-      itSolutions: "IT Solutions",
-      digitalMarketing: "Digital Marketing",
-      graphicDesign: "Graphic Design",
-      mobileApps: "Mobile App Development",
+      allServices: "All Services",
+      projects: "Projects",
       about: "About Us",
       contact: "Contact Us",
       terms: "Terms of Use",
       privacy: "Privacy Policy",
     },
-    compliance: {
-      commercialRegister: "Commercial Register",
-      taxNumber: "Tax Number",
-    },
+    whatsapp: "WhatsApp",
     rightsReserved: "All Rights Reserved.",
-  };
+  },
+  ar: {
+    companyNameFull: "براندرايز لتقنية المعلومات",
+    description:
+      "شركة تقنية معلومات في المملكة العربية السعودية تقدم تطوير المواقع والبرمجيات المخصصة والتسويق الرقمي لمساعدة الشركات في جميع أنحاء المملكة على النمو بثقة.",
+    services: "الخدمات",
+    company: "الشركة",
+    contact: "تواصل معنا",
+    links: {
+      home: "الرئيسية",
+      allServices: "جميع الخدمات",
+      projects: "المشاريع",
+      about: "من نحن",
+      contact: "اتصل بنا",
+      terms: "شروط الاستخدام",
+      privacy: "سياسة الخصوصية",
+    },
+    whatsapp: "واتساب",
+    rightsReserved: "جميع الحقوق محفوظة.",
+  },
+};
 
-  const effectiveLang = resolvedLang || "en";
-  const t = effectiveLang === "ar" ? arabicText : englishText;
-  const isArabic = effectiveLang === "ar";
+const socials = [
+  { href: site.social.x, label: "X", icon: FaXTwitter },
+  { href: site.social.linkedin, label: "LinkedIn", icon: FaLinkedinIn },
+  { href: site.social.snapchat, label: "Snapchat", icon: FaSnapchatGhost },
+  { href: site.social.tiktok, label: "TikTok", icon: FaTiktok },
+  { href: site.social.facebook, label: "Facebook", icon: FaFacebookF },
+];
 
-  type ServiceLinkKey = keyof typeof englishText.links;
+const linkClass = "text-[15px] text-white/70 transition-colors hover:text-white";
+const headingClass = "text-sm font-bold uppercase tracking-[0.16em] text-gold-400";
 
-  // Service links array for dynamic rendering
-  const serviceLinks: Array<{ key: ServiceLinkKey; path: string }> = [
-    { key: "webDevelopment", path: "web-development" },
-    { key: "appDevelopment", path: "mobile-apps" },
-    { key: "itSolutions", path: "it-solutions" },
-    { key: "digitalMarketing", path: "digital-marketing" },
-    { key: "graphicDesign", path: "ui-ux-design" },
-    { key: "mobileApps", path: "mobile-apps" },
-  ];
+export default function Footer({ lang }: FooterProps) {
+  const t = content[lang];
 
   return (
-    <footer
-      className="relative pt-[60px] pb-[30px] font-sans overflow-hidden text-white"
-      suppressHydrationWarning
-      dir={isArabic ? "rtl" : "ltr"}
-    >
-      <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-to-br from-slate-950 via-cyan-950 to-sky-950" />
-      
-   
-      <div className="relative max-w-[1200px] mx-auto px-5">
-        {/* Logo Section - Centered */}
-        <div className="flex flex-col items-center justify-center text-center mb-[30px]">
-          <Link href={`/${effectiveLang}`} className="inline-block mb-[15px]">
-            <Image
-              src="/logo.png"
-              alt="Brandraize"
-              width={220}
-              height={80}
-              priority
-              className="w-auto h-20"
-            />
-          </Link>
-        </div>
+    <footer className="bg-ink-950 text-white">
+      <div className="mx-auto max-w-7xl px-4 pb-24 pt-12 sm:px-6 sm:pb-8 sm:pt-16 lg:px-8">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_0.8fr_1.2fr] lg:gap-12">
+          {/* Brand */}
+          <div className="col-span-2 lg:col-span-1">
+            <Link href={`/${lang}`} className="inline-block">
+              <Logo className="h-16" />
+            </Link>
+            <p className="mt-5 max-w-sm text-[15px] leading-relaxed text-white/65">{t.description}</p>
 
-        {/* Description */}
-        <p className={`text-base leading-relaxed text-white/95 mb-[30px] max-w-[1000px] text-center mx-auto ${isArabic ? 'text-right' : 'text-left'}`}>
-          {t.description}
-        </p>
-
-        {/* Statistics Row */}
-        <div className="flex justify-center items-center gap-[60px] my-5 flex-wrap max-sm:gap-[30px]">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white">150+</div>
-            <div className="text-sm text-white/80 mt-1">{isArabic ? "فريق براندرايز" : "Brandraize Team"}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white">50+</div>
-            <div className="text-sm text-white/80 mt-1">{isArabic ? "عميل حول العالم" : "Clients Worldwide"}</div>
-          </div>
-          <div className="text-center">
-            <div className="w-12 h-auto mx-auto">
-              <Image
-                src="/vision2030.png"
-                alt="Vision 2030"
-                width={48}
-                height={20}
-                className="w-auto h-5"
-              />
+            <div className="mt-6 flex gap-3">
+              {socials.map(({ href, label, icon: Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition-colors hover:border-gold-400 hover:text-gold-400"
+                >
+                  <Icon size={16} />
+                </a>
+              ))}
             </div>
-            <div className="text-sm text-white/80 mt-1">{isArabic ? "رؤية 2030" : "Vision 2030"}</div>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h2 className={headingClass}>{t.services}</h2>
+            <ul className="mt-5 space-y-3">
+              {serviceLinks.map((service) => (
+                <li key={service.slug}>
+                  <Link href={`/${lang}/service#${service.slug}`} className={linkClass}>
+                    {service.label[lang]}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h2 className={headingClass}>{t.company}</h2>
+            <ul className="mt-5 space-y-3">
+              <li><Link href={`/${lang}`} className={linkClass}>{t.links.home}</Link></li>
+              <li><Link href={`/${lang}/service`} className={linkClass}>{t.links.allServices}</Link></li>
+              <li><Link href={`/${lang}/projects`} className={linkClass}>{t.links.projects}</Link></li>
+              <li><Link href={`/${lang}/about`} className={linkClass}>{t.links.about}</Link></li>
+              <li><Link href={`/${lang}/contact`} className={linkClass}>{t.links.contact}</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div className="col-span-2 lg:col-span-1">
+            <h2 className={headingClass}>{t.contact}</h2>
+            <ul className="mt-5 space-y-4">
+              <li>
+                <ContactLink
+                  href={`tel:${site.phone}`}
+                  method="phone"
+                  source="footer"
+                  className={`flex items-center gap-3 ${linkClass}`}
+                >
+                  <Phone className="h-4 w-4 flex-none text-gold-400" aria-hidden="true" />
+                  <span dir="ltr">{site.phoneDisplay}</span>
+                </ContactLink>
+              </li>
+              <li>
+                <ContactLink
+                  href={whatsappHref(lang)}
+                  method="whatsapp"
+                  source="footer"
+                  className={`flex items-center gap-3 ${linkClass}`}
+                >
+                  <FaWhatsapp size={16} className="flex-none text-gold-400" aria-hidden="true" />
+                  {t.whatsapp}
+                </ContactLink>
+              </li>
+              <li>
+                <ContactLink
+                  href={`mailto:${site.email}`}
+                  method="email"
+                  source="footer"
+                  className={`flex items-center gap-3 ${linkClass}`}
+                >
+                  <Mail className="h-4 w-4 flex-none text-gold-400" aria-hidden="true" />
+                  {site.email}
+                </ContactLink>
+              </li>
+              <li className="flex items-start gap-3 text-[15px] text-white/70">
+                <MapPin className="mt-1 h-4 w-4 flex-none text-gold-400" aria-hidden="true" />
+                {site.address[lang]}
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Navigation Links - Two Rows */}
-        <div className="my-[25px] py-[15px] border-t border-b border-white/20">
-          {/* Main Links Row */}
-          <div className="flex flex-wrap justify-center gap-x-[30px] gap-y-3 mb-3">
-            <Link href={`/${effectiveLang}`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
-              {t.links.home}
+        {/* Legal */}
+        <div className="mt-10 flex flex-col gap-4 border-t sm:mt-14 border-white/10 pt-6 text-sm text-white/55 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {new Date().getFullYear()} {t.companyNameFull} | {t.rightsReserved}
+          </p>
+          <div className="flex gap-6">
+            <Link href={`/${lang}/privacy`} className="transition-colors hover:text-white">
+              {t.links.privacy}
             </Link>
-            <Link href={`/${effectiveLang}/about`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
-              {t.links.about}
-            </Link>
-            <Link href={`/${effectiveLang}/contact`} className="text-white no-underline text-base font-normal hover:text-white/70 transition-colors duration-200">
-              {t.links.contact}
+            <Link href={`/${lang}/terms`} className="transition-colors hover:text-white">
+              {t.links.terms}
             </Link>
           </div>
-          
-          {/* Services Links Row */}
-          <div className="flex flex-wrap justify-center gap-x-[25px] gap-y-3">
-            {serviceLinks.map((service) => (
-              <Link
-                key={service.key}
-                href={`/${effectiveLang}/service#${service.path}`}
-                className="text-white/90 no-underline text-sm font-normal hover:text-white transition-colors duration-200"
-              >
-                {t.links[service.key]}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Compliance Section */}
-        <div className="flex items-center justify-between gap-5 my-5 flex-wrap max-sm:flex-col max-sm:text-center">
-          {/* Left - Tax Number */}
-          <div className="flex-1 flex justify-start max-sm:justify-center">
-            {/* <div className="text-sm text-white/90">
-              <span>{t.compliance.taxNumber}: 312974170600003</span>
-            </div> */}
-          </div>
-
-          {/* Right - Commercial Register */}
-          <div className="flex-1 flex justify-end max-sm:justify-center">
-            {/* <div className="text-sm text-white/90">
-              <span>{t.compliance.commercialRegister}: 7049883445</span>
-            </div> */}
-          </div>
-        </div>
-
-        {/* Social Icons - Centered */}
-        <div className="flex justify-center gap-5 my-[30px] mb-[25px]">
-          {/* X (Twitter) */}
-          <a
-            href="https://x.com/brandraize/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="X"
-          >
-            <FaTwitter size={18} />
-          </a>
-
-          {/* Instagram */}
-    {/*  */}
-
-          {/* LinkedIn */}
-          <a
-            href="https://www.linkedin.com/company/brandraize/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-black-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="LinkedIn"
-          >
-            <FaLinkedinIn size={18} />
-          </a>
-
-          {/* Snapchat */}
-          <a
-            href="https://www.snapchat.com/@brandraize"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="Snapchat"
-          >
-            <FaSnapchatGhost size={18} />
-          </a>
-
-          {/* TikTok */}
-          <a
-            href="https://www.tiktok.com/@brandraize"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="TikTok"
-          >
-            <FaTiktok size={18} />
-          </a>
-
-          {/* Facebook */}
-          <a
-            href="https://www.facebook.com/brandraize2/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white transition-all duration-200 flex items-center justify-center w-10 h-10 bg-white/10 rounded-full backdrop-blur-sm border border-white/20 hover:bg-white/20 hover:-translate-y-1"
-            aria-label="Facebook"
-          >
-            <FaFacebookF size={18} />
-          </a>
-        </div>
-
-        {/* Copyright */}
-        <div className={`text-center pt-5 mt-5 border-t border-white/20 text-white/80 text-[0.85rem] ${isArabic ? 'text-right' : 'text-left'}`}>
-          © {new Date().getFullYear()} {t.companyNameFull} | {t.rightsReserved}
         </div>
       </div>
     </footer>

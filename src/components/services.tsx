@@ -1,281 +1,189 @@
-import Image from "next/image";
+import Link from "next/link";
+import Reveal from "@/components/Reveal";
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowRight,
+  ChartNoAxesCombined,
+  Globe,
+  Palette,
+  PlaySquare,
+  Smartphone,
+  Wrench,
+} from "lucide-react";
 
 type Locale = "en" | "ar";
 
 type Feature = {
   title: string;
   description: string;
-  image: string;
+  slug: string;
+  icon: LucideIcon;
 };
 
 const content: Record<
   Locale,
-  { eyebrow: string; title: string; description: string; features: Feature[] }
+  { eyebrow: string; title: string; description: string; more: string; all: string; features: Feature[] }
 > = {
   en: {
-    eyebrow: "Who We Are",
-    title: "Our Expertise",
+    eyebrow: "What We Do",
+    title: "One team for everything your business needs online",
     description:
-      "Brandraize is a creative digital agency delivering innovative IT solutions, marketing strategies, and scalable digital products that help businesses succeed in Saudi Arabia's competitive market.",
+      "Brandraize is a creative digital agency delivering IT solutions, marketing strategies, and scalable digital products that help businesses succeed in Saudi Arabia's competitive market.",
+    more: "Learn more",
+    all: "View all services",
     features: [
       {
         title: "Web & App Development",
         description:
-          "Building scalable, high-performance websites and applications trusted by businesses across Saudi Arabia to deliver powerful digital experiences.",
-        image: "/services/Digital.png",
+          "Scalable, high-performance websites and web applications that turn visitors into customers.",
+        slug: "web-development",
+        icon: Globe,
       },
       {
         title: "Mobile App Development",
         description:
-          "Intuitive iOS and Android apps tailored for Saudi Arabia — designed to engage, retain, and delight your users on every device.",
-        image: "/services/Web_development_app.jpg",
+          "Intuitive iOS and Android apps tailored for Saudi Arabia — designed to engage and retain your users.",
+        slug: "mobile-apps",
+        icon: Smartphone,
       },
       {
         title: "Digital Marketing Solutions",
         description:
-          "Data-driven SEO, social media, and performance marketing strategies to grow your brand across Saudi Arabia and the GCC.",
-        image: "/services/digital_marketing_solutions.jpg",
+          "Data-driven SEO, social media, and performance marketing to grow your brand across Saudi Arabia and the GCC.",
+        slug: "digital-marketing",
+        icon: ChartNoAxesCombined,
       },
       {
         title: "Branding & Graphic Design",
         description:
-          "Distinctive brand identities and visual designs that resonate with your audience and set your business apart in the Saudi market.",
-        image: "/services/branding_design.jpg",
+          "Distinctive brand identities and visual design that set your business apart in the Saudi market.",
+        slug: "ui-ux-design",
+        icon: Palette,
       },
       {
         title: "IT Solutions & Consulting",
         description:
-          "End-to-end IT consulting and infrastructure solutions aligned with Saudi Vision 2030 — empowering your business with the right technology.",
-        image: "/services/IT_solutions_consulting.jpg",
+          "End-to-end IT consulting and infrastructure aligned with Saudi Vision 2030.",
+        slug: "it-solutions",
+        icon: Wrench,
       },
       {
         title: "Video Production & Animation",
         description:
-          "Professional video production and animated content that tells your brand story and captivates your audience across every platform.",
-        image: "/services/video_production_animation.png",
+          "Professional video and motion graphics that tell your brand story on every platform.",
+        slug: "motion-graphic",
+        icon: PlaySquare,
       },
     ],
   },
   ar: {
-    eyebrow: "من نحن",
-    title: "شريكك في النمو الرقمي بالمملكة العربية السعودية",
+    eyebrow: "ماذا نقدم",
+    title: "فريق واحد لكل ما تحتاجه أعمالك على الإنترنت",
     description:
-      "براندرايز وكالة رقمية إبداعية تقدم حلول تقنية وتسويقية متكاملة تساعد الشركات على النجاح والنمو في السوق السعودي التنافسي.",
+      "براندرايز وكالة رقمية إبداعية تقدم حلولاً تقنية وتسويقية متكاملة تساعد الشركات على النجاح والنمو في السوق السعودي التنافسي.",
+    more: "اعرف المزيد",
+    all: "عرض جميع الخدمات",
     features: [
       {
         title: "تطوير المواقع والتطبيقات",
         description:
-          "بناء مواقع ويب قابلة للتطوير وتطبيقات عالية الأداء موثوقة من قبل الشركات في المملكة لتقديم تجارب رقمية متميزة.",
-        image: "/services/Digital.png",
+          "مواقع وتطبيقات ويب عالية الأداء وقابلة للتوسع تحوّل الزوار إلى عملاء.",
+        slug: "web-development",
+        icon: Globe,
       },
       {
         title: "تطوير تطبيقات الجوال",
         description:
-          "تطبيقات iOS وAndroid مصممة خصيصاً للسوق السعودي — تجذب المستخدمين وتحافظ على ولائهم على كل جهاز.",
-        image: "/services/Web_development_app.jpg",
+          "تطبيقات iOS و Android مصممة خصيصاً للسوق السعودي — تجذب المستخدمين وتحافظ على ولائهم.",
+        slug: "mobile-apps",
+        icon: Smartphone,
       },
       {
         title: "حلول التسويق الرقمي",
         description:
-          "استراتيجيات تسويق مبنية على البيانات وتحسين محركات البحث ووسائل التواصل الاجتماعي لتنمية علامتك في السعودية والخليج.",
-        image: "/services/digital_marketing_solutions.jpg",
+          "تحسين محركات البحث وإدارة وسائل التواصل والحملات الإعلانية المبنية على البيانات لتنمية علامتك في السعودية والخليج.",
+        slug: "digital-marketing",
+        icon: ChartNoAxesCombined,
       },
       {
         title: "التصميم والهوية البصرية",
         description:
-          "هويات تجارية مميزة وتصاميم بصرية احترافية تعكس شخصية علامتك وتميزك في السوق السعودي.",
-        image: "/services/branding_design.jpg",
+          "هويات تجارية مميزة وتصاميم احترافية تميّز أعمالك في السوق السعودي.",
+        slug: "ui-ux-design",
+        icon: Palette,
       },
       {
         title: "حلول تقنية المعلومات",
         description:
-          "استشارات تقنية المعلومات وحلول البنية التحتية المتكاملة المتوافقة مع رؤية 2030 لتمكين أعمالك بالتكنولوجيا المناسبة.",
-        image: "/services/IT_solutions_consulting.jpg",
+          "استشارات تقنية وحلول بنية تحتية متكاملة متوافقة مع رؤية 2030.",
+        slug: "it-solutions",
+        icon: Wrench,
       },
       {
         title: "إنتاج الفيديو والأنيميشن",
         description:
-          "إنتاج فيديو احترافي ومحتوى متحرك يروي قصة علامتك التجارية ويأسر جمهورك عبر جميع المنصات.",
-        image: "/services/video_production_animation.png",
+          "فيديو احترافي وموشن جرافيك يروي قصة علامتك التجارية على جميع المنصات.",
+        slug: "motion-graphic",
+        icon: PlaySquare,
       },
     ],
   },
 };
 
-function FeatureCard({ feature }: { feature: Feature }) {
+function FeatureCard({ feature, locale, more }: { feature: Feature; locale: Locale; more: string }) {
+  const Icon = feature.icon;
+
   return (
-    <div className="group p-4 rounded-[28px] h-full">
-      <div
-        className="relative z-10 w-full rounded-[26px] bg-white/[0.08] backdrop-blur-xl p-8 h-full overflow-hidden border border-white/20"
-        style={{
-          boxShadow:
-            "0 8px 32px 0 rgba(100,200,255,0.15), inset 0 1px 0 0 rgba(255,255,255,0.3), inset 0 -1px 0 0 rgba(255,255,255,0.1), 0 20px 60px -15px rgba(0,0,0,0.2)",
-        }}
-      >
-        {/* Shimmer sweep */}
-        <div
-          className="absolute inset-0 rounded-[26px]"
-          style={{
-            background:
-              "linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%)",
-            animation: "shimmer 3s infinite",
-            transform: "translateX(-100%)",
-          }}
-        />
-        {/* Top highlight */}
-        <div className="absolute top-0 left-0 right-0 h-2/5 rounded-t-[26px] bg-gradient-to-b from-white/20 via-white/5 to-transparent pointer-events-none" />
-        {/* Colour washes */}
-        <div className="absolute inset-0 rounded-[26px] bg-gradient-to-br from-cyan-200/10 via-transparent to-blue-300/10 pointer-events-none" />
-        <div className="absolute inset-0 rounded-[26px] bg-gradient-to-tl from-purple-300/[0.08] via-transparent to-pink-300/[0.08] pointer-events-none" />
-        {/* Corner glow */}
-        <div className="absolute top-0 left-0 w-48 h-48 bg-white/[0.15] rounded-full blur-3xl pointer-events-none -translate-x-1/2 -translate-y-1/2" />
-
-        {/* Content */}
-        <div className="relative z-10">
-          <div className="flex justify-center mb-6">
-            <div className="relative">
-              <Image
-                src={feature.image}
-                alt={feature.title}
-                width={200}
-                height={192}
-                className="w-auto h-48 object-cover transition-transform duration-500 group-hover:scale-105"
-                style={{
-                  filter:
-                    "drop-shadow(0 10px 40px rgba(100,200,255,0.4)) drop-shadow(0 0 20px rgba(255,255,255,0.3))",
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/30 via-blue-400/30 to-purple-400/30 blur-3xl -z-10 group-hover:blur-2xl transition-all duration-500" />
-            </div>
-          </div>
-          <h3
-            className="md:text-3xl text-xl font-bold text-white mb-3 tracking-tight"
-            style={{
-              textShadow:
-                "0 2px 20px rgba(255,255,255,0.4), 0 0 40px rgba(100,200,255,0.3)",
-            }}
-          >
-            {feature.title}
-          </h3>
-          <p
-            className="text-base text-white/95 leading-relaxed"
-            style={{
-              textShadow:
-                "0 1px 10px rgba(255,255,255,0.3), 0 0 20px rgba(100,200,255,0.2)",
-            }}
-          >
-            {feature.description}
-          </p>
-        </div>
-
-        {/* Bottom fade + corner accents */}
-        <div className="absolute bottom-0 left-0 right-0 h-[30%] rounded-b-[26px] bg-gradient-to-t from-white/[0.12] via-white/[0.04] to-transparent pointer-events-none" />
-        <div className="absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-xl pointer-events-none" />
-        <div className="absolute bottom-4 left-4 w-20 h-20 bg-gradient-to-tr from-cyan-300/[0.15] to-transparent rounded-full blur-2xl pointer-events-none" />
-      </div>
-    </div>
+    <Link
+      href={`/${locale}/service#${feature.slug}`}
+      className="group flex h-full items-start gap-4 rounded-2xl border border-sand-200 bg-white p-5 transition-all sm:flex-col sm:gap-0 sm:rounded-3xl sm:p-7 duration-300 hover:-translate-y-1 hover:border-gold-500/60 hover:shadow-[0_18px_40px_rgba(11,18,32,0.08)]"
+    >
+      <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-ink-900 text-gold-400 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110">
+        <Icon className="h-6 w-6" aria-hidden="true" />
+      </span>
+      <span className="flex flex-1 flex-col sm:mt-5">
+      <span className="block text-lg font-bold text-ink-900 sm:text-xl">{feature.title}</span>
+      <span className="mt-1 block flex-1 text-[15px] leading-relaxed text-slate-600 sm:mt-2">{feature.description}</span>
+      <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold text-gold-700 sm:mt-5">
+        {more}
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" aria-hidden="true" />
+      </span>
+      </span>
+    </Link>
   );
 }
 
 export default function Services({ locale }: { locale: Locale }) {
   const t = content[locale];
-  const isRTL = locale === "ar";
-  const row1 = t.features.slice(0, 2);
-  const row2 = t.features.slice(2, 4);
-  const row3 = t.features.slice(4, 6);
 
   return (
-    <section
-      className="relative overflow-hidden rounded-3xl py-10 mx-4 lg:mx-8 my-8"
-      dir={isRTL ? "rtl" : "ltr"}
-    >
-      {/* Dark gradient background */}
-      <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-[#0a0e28] via-[#050a1f] to-black" />
+    <section className="bg-sand-50 py-14 sm:py-20 lg:py-28">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section header */}
+        <Reveal className="max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-[0.18em] text-gold-700">{t.eyebrow}</p>
+          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-ink-900 sm:text-4xl">
+            {t.title}
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-slate-600">{t.description}</p>
+        </Reveal>
 
-      {/* Section header */}
-      <div className="relative z-10 text-center mb-20 px-4 mt-8">
-       
-        <h2 className="lg:text-5xl md:text-4xl text-3xl text-white font-semibold mb-4 max-w-3xl mx-auto leading-tight">
-          {t.title}
-        </h2>
-        <p className="text-white/75 max-w-xl mx-auto text-base leading-relaxed px-4">
-          {t.description}
-        </p>
-      </div>
-
-      {/* Desktop grid (lg+) */}
-      <div className="relative hidden lg:block max-w-6xl mx-auto px-4 z-10">
-        {/* SVG connector lines */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none z-0"
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-        >
-          <g>
-            <path d="M 20 20 Q 25 10 48 45" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 20 20 Q 25 10 48 45" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="78" />
-          </g>
-          <g>
-            <path d="M 80 20 Q 75 10 54 45" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 80 20 Q 75 10 54 45" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="16" />
-          </g>
-          <g>
-            <path d="M 20 50 Q 35 50 43 50" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 20 50 Q 35 50 43 50" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="3" />
-          </g>
-          <g>
-            <path d="M 80 50 Q 65 50 57 50" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 80 50 Q 65 50 57 50" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="54" />
-          </g>
-          <g>
-            <path d="M 20 80 Q 25 90 48 56" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 20 80 Q 25 90 48 56" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="99" />
-          </g>
-          <g>
-            <path d="M 80 80 Q 75 90 53 56" stroke="#d1d5db" strokeWidth="0.08" fill="none" />
-            <path d="M 80 80 Q 75 90 53 56" stroke="#3b82f6" strokeWidth="0.08" fill="none" strokeDasharray="100" strokeDashoffset="78" />
-          </g>
-        </svg>
-
-        {/* Centre logo */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-          <Image
-            src="/B_logo.png"
-            alt="Brandraize logo"
-            width={176}
-            height={176}
-            className="w-44 h-44 object-cover p-2 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
-          />
-        </div>
-
-        {/* Row 1 — 2 cards */}
-        <div className="grid grid-cols-2 gap-10 mb-24">
-          {row1.map((f, i) => (
-            <FeatureCard key={i} feature={f} />
-          ))}
-        </div>
-
-        {/* Row 2 — card | empty centre (logo) | card */}
-        <div className="grid grid-cols-3 gap-10 mb-24 items-center">
-          <FeatureCard feature={row2[0]} />
-          <div />
-          <FeatureCard feature={row2[1]} />
-        </div>
-
-        {/* Row 3 — 2 cards */}
-        <div className="grid grid-cols-2 gap-10">
-          {row3.map((f, i) => (
-            <FeatureCard key={i} feature={f} />
-          ))}
-        </div>
-      </div>
-
-      {/* Mobile / tablet layout */}
-      <div className="lg:hidden max-w-md mx-auto px-4 relative z-10">
-        <div className="flex flex-col gap-6">
+        <div className="mt-8 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
           {t.features.map((f, i) => (
-            <FeatureCard key={i} feature={f} />
+            <Reveal key={f.slug} variant="zoom" delay={(i % 3) * 110} className="h-full">
+              <FeatureCard feature={f} locale={locale} more={t.more} />
+            </Reveal>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <Link
+            href={`/${locale}/service`}
+            className="inline-flex items-center gap-2 rounded-full border border-ink-900 px-6 py-3 text-sm font-bold text-ink-900 transition-colors hover:bg-ink-900 hover:text-white"
+          >
+            {t.all}
+            <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </section>

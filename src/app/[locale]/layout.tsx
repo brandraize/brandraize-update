@@ -1,11 +1,22 @@
+import '../globals.css';
+import type { Metadata, Viewport } from 'next';
 import { notFound } from 'next/navigation';
 import { ReactNode } from 'react';
+import { Tajawal } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
+import Analytics from '@/components/Analytics';
+import { WhatsAppFloat } from '@/components/ContactLink';
 import Header from '@/components/Header';
 import Footer from '@/components/footer';
+import { locales, site, toLocale } from '@/lib/site';
 
-const locales = ['en', 'ar'];
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '500', '700', '800'],
+  variable: '--font-tajawal',
+  display: 'swap',
+});
 
 type Props = {
   children: ReactNode;
@@ -16,38 +27,69 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export async function generateMetadata({ params }: Props) {
-  const { locale } = await params;
-  const validLocale = locale === 'ar' ? 'ar' : 'en';
-  const t = await getTranslations({ locale: validLocale });
+export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
+  title: { default: site.name, template: `%s | ${site.name}` },
+};
 
-  return {
-    title: t('metaTitle'),
-    description: t('metaDescription'),
-  };
-}
+export const viewport: Viewport = {
+  themeColor: '#07173d',
+};
 
 export default async function LocaleLayout({
   children,
   params,
 }: Props) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
 
-  if (!locales.includes(locale)) {
+  if (!(locales as readonly string[]).includes(rawLocale)) {
     notFound();
   }
 
+  const locale = toLocale(rawLocale);
   setRequestLocale(locale);
   const messages = await getMessages();
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: site.name,
+    url: site.url,
+    logo: `${site.url}/logo%20b.png`,
+    telephone: site.phone,
+    email: site.email,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Jeddah',
+      addressRegion: 'Makkah',
+      addressCountry: 'SA',
+    },
+    areaServed: 'SA',
+    sameAs: Object.values(site.social),
+  };
+
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <Header lang={locale as 'en' | 'ar'} />
-      
-      {children}
+    <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Browser extensions add attributes to <body> before React loads */}
+      <body className={`${tajawal.variable} font-sans antialiased`} suppressHydrationWarning>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+        />
+        {/* Scroll-reveal content stays visible when JavaScript is unavailable */}
+        <noscript>
+          <style>{'[data-reveal]{opacity:1!important;transform:none!important}'}</style>
+        </noscript>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Header lang={locale} />
 
-      <Footer lang={locale as 'en' | 'ar'} />
+          {children}
 
-    </NextIntlClientProvider>
+          <Footer lang={locale} />
+          <WhatsAppFloat locale={locale} />
+        </NextIntlClientProvider>
+        <Analytics />
+      </body>
+    </html>
   );
 }
