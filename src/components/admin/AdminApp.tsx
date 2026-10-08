@@ -233,8 +233,25 @@ function Dashboard({ user }: { user: User }) {
               { key: 'title', label: 'Project name', bilingual: true },
               { key: 'category', label: 'Type of work', bilingual: true },
               { key: 'summary', label: 'Short description', bilingual: true, rows: 3, hint: 'One or two sentences, shown on the home page and project cards.' },
-              { key: 'details', label: 'Full details', bilingual: true, rows: 8, hint: 'Shown on the project page. Press Enter to start a new paragraph: what the client needed, what you built, and the result.' },
-              { key: 'url', label: 'Website address', hint: 'Optional, for example https://example.com. Adds a “Visit the live website” button.' },
+
+              { key: 'client', label: 'Client', bilingual: true, section: 'Project facts (all optional)' },
+              { key: 'industry', label: 'Industry', bilingual: true, hint: 'For example: Real estate, Healthcare, Contracting.' },
+              { key: 'year', label: 'Year', hint: 'For example: 2025.' },
+              { key: 'services', label: 'What you did — one per line', bilingual: true, rows: 4, hint: 'For example: UI/UX design, Website development, SEO.' },
+              { key: 'url', label: 'Website address', hint: 'For example https://example.com. Adds a “Visit the live website” button.' },
+
+              { key: 'details', label: 'Overview', bilingual: true, rows: 6, section: 'The story', hint: 'A few sentences introducing the project. Press Enter to start a new paragraph.' },
+              { key: 'challenge', label: 'The challenge', bilingual: true, rows: 4, hint: 'What the client needed or what was not working.' },
+              { key: 'solution', label: 'What we built', bilingual: true, rows: 4 },
+              { key: 'result', label: 'The result', bilingual: true, rows: 4, hint: 'What changed for the client afterwards.' },
+
+              { key: 'features', label: 'Key features — one per line', bilingual: true, rows: 5, section: 'Features and numbers' },
+              { key: 'technologies', label: 'Technologies used', hint: 'Separated by commas, for example: Next.js, Laravel, MySQL.' },
+              { key: 'stats', label: 'Headline numbers — one per line, as “number | what it means”', bilingual: true, rows: 3, hint: 'Up to four, for example: 3 weeks | from brief to launch. Only use real figures.' },
+
+              { key: 'rating', label: 'Client rating (1 to 5)', section: 'Client satisfaction', hint: 'Shown as stars. Leave empty if the client did not give one.' },
+              { key: 'clientQuote', label: 'What the client said', bilingual: true, rows: 3, hint: 'Their own words, with their permission.' },
+              { key: 'clientPerson', label: 'Who said it', bilingual: true, hint: 'Name and role, for example: Ahmed Al-Harbi, General Manager.' },
             ]}
           />
         )}

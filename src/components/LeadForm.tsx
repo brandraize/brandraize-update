@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import ContactLink from '@/components/ContactLink';
+import SelectField from '@/components/SelectField';
 import { serviceLinks, whatsappHref, type Locale } from '@/lib/site';
 import { trackLead } from '@/lib/track';
 
@@ -66,7 +67,7 @@ export default function LeadForm({ locale, source }: LeadFormProps) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   const set = (key: keyof typeof empty) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   // The same details as a WhatsApp message, used when the form cannot be delivered.
@@ -181,18 +182,14 @@ export default function LeadForm({ locale, source }: LeadFormProps) {
 
         <div>
           <label htmlFor={`${source}-service`} className={labelClass}>{t.service}</label>
-          <select
+          <SelectField
             id={`${source}-service`}
             value={form.service}
-            onChange={set('service')}
+            onChange={(service) => setForm((f) => ({ ...f, service }))}
+            placeholder={t.servicePlaceholder}
+            options={[...serviceLinks.map((s) => s.label[locale]), t.other]}
             className={fieldClass}
-          >
-            <option value="">{t.servicePlaceholder}</option>
-            {serviceLinks.map((s) => (
-              <option key={s.slug} value={s.label[locale]}>{s.label[locale]}</option>
-            ))}
-            <option value={t.other}>{t.other}</option>
-          </select>
+          />
         </div>
 
         <div>

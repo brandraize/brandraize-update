@@ -1,9 +1,10 @@
 'use client';
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import MobileMenu from "@/components/MobileMenu";
 import { usePathname } from "next/navigation";
-import { Globe, Menu, X, ChevronDown } from "lucide-react";
+import { Globe, Menu, ChevronDown } from "lucide-react";
 import { serviceLinks } from "@/lib/site";
 
 /* ─── Types ─────────────────────────────────────────── */
@@ -107,7 +108,8 @@ export default function Navbar({ lang }: { lang: Lang }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const pathWithoutLocale = pathname.replace(/^\/(?:en|ar)/, "");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -135,9 +137,10 @@ export default function Navbar({ lang }: { lang: Lang }) {
   const cta = lang === "ar" ? "استشارة مجانية" : "Free Consultation";
 
   return (
+    <>
     <header
       className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300
-        ${scrolled || mobileOpen
+        ${scrolled
           ? "border-white/10 bg-ink-950/95 backdrop-blur-md"
           : "border-transparent bg-ink-950/0"}`}
     >
@@ -181,79 +184,24 @@ export default function Navbar({ lang }: { lang: Lang }) {
 
         {/* ── Mobile toggle ── */}
         <button
-          onClick={() => setMobileOpen((v) => !v)}
-          aria-label={lang === "ar" ? "القائمة" : "Toggle menu"}
+          onClick={() => setMobileOpen(true)}
+          aria-label={lang === "ar" ? "فتح القائمة" : "Open menu"}
           aria-expanded={mobileOpen}
           className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/15 text-white md:hidden"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Menu className="h-5 w-5" />
         </button>
       </div>
-
-      {/* ── Mobile menu ── */}
-      {mobileOpen && (
-        <div className="max-h-[calc(100dvh-72px)] overflow-y-auto border-t border-white/10 bg-ink-950 px-4 pb-6 pt-3 md:hidden">
-          <ul className="flex flex-col gap-1">
-            {menuItems.map((item) => (
-              <li key={item.href}>
-                {item.children ? (
-                  <>
-                    <button
-                      onClick={() =>
-                        setMobileExpanded((v) => (v === item.href ? null : item.href))
-                      }
-                      aria-expanded={mobileExpanded === item.href}
-                      className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base font-semibold text-white/90"
-                    >
-                      {item.label}
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200
-                          ${mobileExpanded === item.href ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                    {mobileExpanded === item.href && (
-                      <div className="pb-2 ps-4">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={`/${lang}${child.href}`}
-                            onClick={() => setMobileOpen(false)}
-                            className="block rounded-xl px-4 py-2.5 text-sm text-white/70"
-                          >
-                            {child.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <Link
-                    href={`/${lang}${item.href}`}
-                    onClick={() => setMobileOpen(false)}
-                    className={`block rounded-xl px-4 py-3 text-base font-semibold
-                      ${isActive(item.href) ? "text-gold-400" : "text-white/90"}`}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-            <Link
-              href={`/${lang}/contact`}
-              onClick={() => setMobileOpen(false)}
-              className="rounded-full bg-gold-500 px-5 py-3 text-center text-sm font-bold text-ink-950"
-            >
-              {cta}
-            </Link>
-            <div className="self-start">
-              <LanguageSwitcher lang={lang} />
-            </div>
-          </div>
-        </div>
-      )}
     </header>
+
+    {/* The mobile menu sits outside the header: the header's blur would otherwise trap it inside the bar. */}
+    <MobileMenu
+      lang={lang}
+      open={mobileOpen}
+      onClose={closeMobile}
+      path={pathWithoutLocale}
+      switchHref={`/${lang === "en" ? "ar" : "en"}${pathWithoutLocale}`}
+    />
+    </>
   );
 }

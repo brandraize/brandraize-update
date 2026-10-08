@@ -69,15 +69,32 @@ const text = (value: unknown): Text => {
 
 export const imageUrl = (imageId: unknown) => (imageId ? `/api/img/${imageId}` : '');
 
+type Lines = Record<Locale, string[]>;
+
 export type Project = {
   id: string;
   image: string;
   title: Text;
   category: Text;
   summary: Text;
-  // Shown on the project's own page.
+  // Everything below is shown on the project's own page; each part is optional.
   details: Text;
   url: string;
+  client: Text;
+  industry: Text;
+  year: string;
+  services: Lines;
+  challenge: Text;
+  solution: Text;
+  result: Text;
+  features: Lines;
+  technologies: string[];
+  // Headline numbers, e.g. { value: '3 weeks', label: 'from brief to launch' }.
+  stats: Record<Locale, Array<{ value: string; label: string }>>;
+  // Client satisfaction: 0 means no rating was entered.
+  rating: number;
+  clientQuote: Text;
+  clientPerson: Text;
   gallery: string[];
   // A full-page screenshot of the finished website, as strips stacked top to bottom.
   fullPage: string[];
@@ -85,17 +102,48 @@ export type Project = {
 
 const ids = (value: unknown) => (Array.isArray(value) ? value.map(imageUrl).filter(Boolean) : []);
 
-const toProject = (row: Row): Project => ({
-  id: row.id,
-  image: imageUrl(row.imageId),
-  title: text(row.title),
-  category: text(row.category),
-  summary: text(row.summary),
-  details: text(row.details),
-  url: String(row.url ?? ''),
-  gallery: ids(row.galleryIds),
-  fullPage: ids(row.fullPageIds),
-});
+// The admin types lists one item per line.
+const toLines = (value: string) => value.split('\n').map((line) => line.trim()).filter(Boolean);
+const lines = (value: unknown): Lines => {
+  const t = text(value);
+  return { en: toLines(t.en), ar: toLines(t.ar) };
+};
+// Headline numbers are typed as "value | label", one per line.
+const toStats = (list: string[]) =>
+  list
+    .map((line) => line.split('|').map((part) => part.trim()))
+    .filter((parts) => parts.length >= 2 && parts[0] && parts[1])
+    .map(([value, label]) => ({ value, label }));
+
+const emptyText = (): Text => ({ en: '', ar: '' });
+
+const toProject = (row: Row): Project => {
+  const stats = lines(row.stats);
+  return {
+    id: row.id,
+    image: imageUrl(row.imageId),
+    title: text(row.title),
+    category: text(row.category),
+    summary: text(row.summary),
+    details: text(row.details),
+    url: String(row.url ?? ''),
+    client: text(row.client),
+    industry: text(row.industry),
+    year: String(row.year ?? ''),
+    services: lines(row.services),
+    challenge: text(row.challenge),
+    solution: text(row.solution),
+    result: text(row.result),
+    features: lines(row.features),
+    technologies: String(row.technologies ?? '').split(/[,\n]/).map((item) => item.trim()).filter(Boolean),
+    stats: { en: toStats(stats.en), ar: toStats(stats.ar) },
+    rating: Math.max(0, Math.min(5, Math.round(Number(row.rating) || 0))),
+    clientQuote: text(row.clientQuote),
+    clientPerson: text(row.clientPerson),
+    gallery: ids(row.galleryIds),
+    fullPage: ids(row.fullPageIds),
+  };
+};
 
 const builtInProjects = (): Project[] =>
   defaultWork.map((item) => ({
@@ -104,8 +152,21 @@ const builtInProjects = (): Project[] =>
     title: item.title,
     category: item.category,
     summary: item.summary,
-    details: { en: '', ar: '' },
+    details: emptyText(),
     url: '',
+    client: emptyText(),
+    industry: emptyText(),
+    year: '',
+    services: { en: [], ar: [] },
+    challenge: emptyText(),
+    solution: emptyText(),
+    result: emptyText(),
+    features: { en: [], ar: [] },
+    technologies: [],
+    stats: { en: [], ar: [] },
+    rating: 0,
+    clientQuote: emptyText(),
+    clientPerson: emptyText(),
     gallery: [],
     fullPage: [],
   }));

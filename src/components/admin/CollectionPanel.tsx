@@ -23,6 +23,8 @@ export type Field = {
   // Number of text rows; fields without it are a single line.
   rows?: number;
   hint?: string;
+  // Starts a new group in the form, with this heading above the field.
+  section?: string;
 };
 
 type CollectionPanelProps = {
@@ -317,6 +319,11 @@ export default function CollectionPanel({
 
           {fields.map((field) => (
             <div key={field.key}>
+              {field.section && (
+                <h4 className="mb-4 border-t border-sand-200 pt-6 text-sm font-extrabold uppercase tracking-widest text-gold-700">
+                  {field.section}
+                </h4>
+              )}
               {field.bilingual ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
