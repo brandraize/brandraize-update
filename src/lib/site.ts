@@ -10,7 +10,8 @@ export const site = {
   alternateNames: ['Brand Raize', 'BrandRaize', 'براندرايز', 'براند رايز'],
   url: 'https://brandraize.com',
   phone: '+966551981751',
-  phoneDisplay: '+966 55 198 1751',
+  // The local format, as customers in Saudi Arabia type and search it.
+  phoneDisplay: '0551981751',
   whatsapp: '966551981751',
   email: 'info@brandraize.com',
   clients: '150+',

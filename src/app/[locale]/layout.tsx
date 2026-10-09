@@ -65,6 +65,13 @@ export default async function LocaleLayout({
         logo: `${site.url}/logo%20b.png`,
         image: `${site.url}/${locale}/opengraph-image`,
         telephone: site.phone,
+        contactPoint: {
+          '@type': 'ContactPoint',
+          telephone: site.phone,
+          contactType: 'customer service',
+          areaServed: 'SA',
+          availableLanguage: ['Arabic', 'English'],
+        },
         email: site.email,
         address: {
           '@type': 'PostalAddress',
