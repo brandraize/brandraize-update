@@ -30,6 +30,9 @@ export function generateStaticParams() {
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: site.name, template: `%s | ${site.name}` },
+  applicationName: site.name,
+  // Google Search Console "HTML tag" verification code, when set.
+  verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION },
 };
 
 export const viewport: Viewport = {
@@ -52,20 +55,36 @@ export default async function LocaleLayout({
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    name: site.name,
-    url: site.url,
-    logo: `${site.url}/logo%20b.png`,
-    telephone: site.phone,
-    email: site.email,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Jeddah',
-      addressRegion: 'Makkah',
-      addressCountry: 'SA',
-    },
-    areaServed: 'SA',
-    sameAs: Object.values(site.social),
+    '@graph': [
+      {
+        '@type': 'ProfessionalService',
+        '@id': `${site.url}/#organization`,
+        name: site.name,
+        alternateName: site.alternateNames,
+        url: site.url,
+        logo: `${site.url}/logo%20b.png`,
+        image: `${site.url}/${locale}/opengraph-image`,
+        telephone: site.phone,
+        email: site.email,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Jeddah',
+          addressRegion: 'Makkah',
+          addressCountry: 'SA',
+        },
+        areaServed: 'SA',
+        sameAs: Object.values(site.social),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${site.url}/#website`,
+        name: site.name,
+        alternateName: site.alternateNames,
+        url: site.url,
+        inLanguage: [...locales],
+        publisher: { '@id': `${site.url}/#organization` },
+      },
+    ],
   };
 
   return (

@@ -6,6 +6,8 @@ export const toLocale = (value: string): Locale => (value === 'ar' ? 'ar' : 'en'
 // Single source of truth for business details shown across the site.
 export const site = {
   name: 'Brandraize',
+  // Other ways people type the name into a search engine.
+  alternateNames: ['Brand Raize', 'BrandRaize', 'براندرايز', 'براند رايز'],
   url: 'https://brandraize.com',
   phone: '+966551981751',
   phoneDisplay: '+966 55 198 1751',

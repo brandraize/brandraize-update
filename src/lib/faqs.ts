@@ -23,6 +23,10 @@ export const faqs: Record<Locale, Array<{ q: string; a: string }>> = {
       a: 'Yes, we offer IT support and maintenance packages to keep your software running smoothly, with technical support available across KSA.',
     },
     {
+      q: 'Is Brandraize the same as Brand Raize?',
+      a: 'Yes. Brandraize — sometimes written Brand Raize — is one company: a digital marketing and software agency based in Jeddah, Saudi Arabia. Our official website is brandraize.com.',
+    },
+    {
       q: 'How can I get started with Brandraize?',
       a: 'Send the form, message us on WhatsApp, or call. Our team will guide you through a free consultation — from requirements to project launch.',
     },
@@ -47,6 +51,10 @@ export const faqs: Record<Locale, Array<{ q: string; a: string }>> = {
     {
       q: 'هل تقدمون دعمًا وصيانة مستمرة؟',
       a: 'نعم، نقدم باقات صيانة ودعم فني لضمان عمل برامجك بسلاسة، مع دعم فني متاح في جميع أنحاء المملكة.',
+    },
+    {
+      q: 'هل براندرايز هي نفسها براند رايز؟',
+      a: 'نعم. براندرايز — وتُكتب أحياناً براند رايز (Brand Raize) — شركة واحدة: وكالة تسويق رقمي وبرمجيات مقرها جدة، المملكة العربية السعودية. موقعنا الرسمي هو brandraize.com.',
     },
     {
       q: 'كيف أبدأ مع براندرايز؟',
