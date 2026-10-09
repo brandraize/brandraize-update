@@ -1,5 +1,6 @@
 import { Blocks } from 'lucide-react';
 import { firebaseConfig, firestoreRest } from './firebase/config';
+import { readProjectImages } from './local-projects';
 import { work as defaultWork } from './proof';
 import { serviceGroups as defaultServiceGroups, type ServiceGroup } from './services';
 import type { Locale } from './site';
@@ -53,14 +54,16 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 
 type Row = Record<string, unknown> & { id: string };
 
-// Published documents of a collection, in the admin's chosen order.
-async function listPublished(collection: string): Promise<Row[]> {
+// Every document of a collection, in the admin's chosen order.
+async function listAll(collection: string): Promise<Row[]> {
   const data = await fetchJson<{ documents?: FsDoc[] }>(`${collection}?pageSize=100`);
   return (data?.documents ?? [])
     .map((doc) => ({ ...decodeFields(doc.fields ?? {}), id: doc.name.split('/').pop()! }) as Row)
-    .filter((row) => row.published !== false)
     .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
 }
+
+const listPublished = async (collection: string) =>
+  (await listAll(collection)).filter((row) => row.published !== false);
 
 const text = (value: unknown): Text => {
   const v = (value ?? {}) as Partial<Text>;
@@ -73,6 +76,7 @@ type Lines = Record<Locale, string[]>;
 
 export type Project = {
   id: string;
+  // Empty when the project has no picture yet; a placeholder is shown instead.
   image: string;
   title: Text;
   category: Text;
@@ -145,24 +149,25 @@ const toProject = (row: Row): Project => {
   };
 };
 
-const builtInProjects = (): Project[] =>
-  defaultWork.map((item) => ({
+const builtInProjects = (): Project[] => {
+  const images = readProjectImages();
+  return defaultWork.map((item) => ({
     id: item.id,
-    image: item.image,
+    image: item.image ?? images.get(item.id) ?? '',
     title: item.title,
     category: item.category,
     summary: item.summary,
     details: emptyText(),
-    url: '',
+    url: item.url ?? '',
     client: emptyText(),
     industry: emptyText(),
     year: '',
     services: { en: [], ar: [] },
     challenge: emptyText(),
     solution: emptyText(),
-    result: emptyText(),
+    result: item.result ?? emptyText(),
     features: { en: [], ar: [] },
-    technologies: [],
+    technologies: item.technologies ?? [],
     stats: { en: [], ar: [] },
     rating: 0,
     clientQuote: emptyText(),
@@ -170,10 +175,19 @@ const builtInProjects = (): Project[] =>
     gallery: [],
     fullPage: [],
   }));
+};
 
+const titleKey = (title: unknown) => text(title).en.trim().toLowerCase();
+
+// Projects from the admin come first, followed by the built-in ones. A built-in project is
+// left out once the admin has one with the same English title, shown or hidden.
 export async function getProjects(): Promise<Project[]> {
-  const rows = await listPublished('projects');
-  return rows.length === 0 ? builtInProjects() : rows.map(toProject);
+  const rows = await listAll('projects');
+  const taken = new Set(rows.map((row) => titleKey(row.title)));
+  return [
+    ...rows.filter((row) => row.published !== false).map(toProject),
+    ...builtInProjects().filter((project) => !taken.has(titleKey(project.title))),
+  ];
 }
 
 export async function getProject(id: string): Promise<Project | null> {

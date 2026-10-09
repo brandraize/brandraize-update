@@ -125,11 +125,12 @@ export default function CollectionPanel({
     try {
       for (const [i, item] of defaults.entries()) {
         setImporting(`Importing ${i + 1} of ${defaults.length}…`);
-        const blob = await (await fetch(item.image)).blob();
-        const imageId = await saveImage(await compressImage(new File([blob], 'image'), image.maxSide));
+        // Built-in projects may not have a picture yet; it can be added here afterwards.
+        const blob = item.image ? await (await fetch(item.image)).blob() : null;
+        const imageId = blob && (await saveImage(await compressImage(new File([blob], 'image'), image.maxSide)));
         await addDoc(collection(db, name), {
           ...item.data,
-          imageId,
+          ...(imageId ? { imageId } : {}),
           order: i + 1,
           published: true,
           createdAt: serverTimestamp(),
