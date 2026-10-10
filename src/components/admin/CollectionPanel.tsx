@@ -43,6 +43,9 @@ type CollectionPanelProps = {
   titleField: string;
   // Key in /api/defaults holding what the website shows for this section before the admin adds anything.
   defaultsKey?: 'projects' | 'clients';
+  // Built-in items stay on the website next to the added ones, until one with the same title
+  // is added here. Without it, the first added item replaces all the built-in ones.
+  defaultsStay?: boolean;
 };
 
 type DefaultItem = { image: string; data: Record<string, unknown> };
@@ -85,6 +88,7 @@ export default function CollectionPanel({
   fullPage,
   titleField,
   defaultsKey,
+  defaultsStay,
 }: CollectionPanelProps) {
   const [items, setItems] = useState<Item[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -119,19 +123,26 @@ export default function CollectionPanel({
       .catch(() => setDefaults([]));
   }, [defaultsKey]);
 
-  // Copies the built-in items into the database so they can be edited here like any other.
-  const importDefaults = async () => {
+  // Built-in items the website still shows: the ones not yet added here under the same title.
+  const titleKey = (value: unknown) => en(value).trim().toLowerCase();
+  const taken = new Set(items.map((item) => titleKey(item[titleField])));
+  const builtIn =
+    defaultsStay || items.length === 0 ? defaults.filter((item) => !taken.has(titleKey(item.data[titleField]))) : [];
+
+  // Copies built-in items into the database so they can be edited here like any other.
+  const importDefaults = async (list: DefaultItem[]) => {
     setError(null);
+    const firstOrder = (items.at(-1)?.order ?? 0) + 1;
     try {
-      for (const [i, item] of defaults.entries()) {
-        setImporting(`Importing ${i + 1} of ${defaults.length}…`);
+      for (const [i, item] of list.entries()) {
+        setImporting(`Importing ${i + 1} of ${list.length}…`);
         // Built-in projects may not have a picture yet; it can be added here afterwards.
         const blob = item.image ? await (await fetch(item.image)).blob() : null;
         const imageId = blob && (await saveImage(await compressImage(new File([blob], 'image'), image.maxSide)));
         await addDoc(collection(db, name), {
           ...item.data,
           ...(imageId ? { imageId } : {}),
-          order: i + 1,
+          order: firstOrder + i,
           published: true,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
@@ -480,24 +491,9 @@ export default function CollectionPanel({
         </form>
       )}
 
-      {!draft && loaded && items.length === 0 && !error && (
+      {!draft && loaded && items.length === 0 && builtIn.length === 0 && !error && (
         <div className={`${cardClass} mt-5`}>
-          {defaults.length > 0 ? (
-            <>
-              <p className="font-bold text-ink-900">
-                The website is currently showing {defaults.length} built-in {noun}{defaults.length === 1 ? '' : 's'}.
-              </p>
-              <p className="mt-1 text-[15px] text-slate-600">
-                Import {defaults.length === 1 ? 'it' : 'them'} to see and edit {defaults.length === 1 ? 'it' : 'them'} here, then add more. Nothing changes on the website until you edit something.
-              </p>
-              <button type="button" onClick={importDefaults} disabled={importing !== null} className={`${primaryButton} mt-4`}>
-                {importing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
-                {importing ?? `Import ${defaults.length} ${noun}${defaults.length === 1 ? '' : 's'} from the website`}
-              </button>
-            </>
-          ) : (
-            <p className="text-slate-600">Nothing added yet. Press &ldquo;Add {noun}&rdquo; to create the first one.</p>
-          )}
+          <p className="text-slate-600">Nothing added yet. Press &ldquo;Add {noun}&rdquo; to create the first one.</p>
         </div>
       )}
 
@@ -530,6 +526,47 @@ export default function CollectionPanel({
             </li>
           ))}
         </ul>
+      )}
+
+      {/* Built-in items the website shows that are not in the database yet */}
+      {!draft && loaded && builtIn.length > 0 && (
+        <div className="mt-8">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-bold text-ink-900">
+                The website is also showing {builtIn.length} built-in {noun}{builtIn.length === 1 ? '' : 's'}.
+              </p>
+              <p className="mt-1 max-w-2xl text-[15px] text-slate-600">
+                {builtIn.length === 1 ? 'It comes' : 'They come'} with the website and {builtIn.length === 1 ? 'is' : 'are'} not saved in the dashboard yet. Import {builtIn.length === 1 ? 'it' : 'them'} to edit, hide or delete {builtIn.length === 1 ? 'it' : 'them'} here.
+              </p>
+            </div>
+            <button type="button" onClick={() => importDefaults(builtIn)} disabled={importing !== null} className={primaryButton}>
+              {importing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
+              {importing ?? `Import all ${builtIn.length}`}
+            </button>
+          </div>
+
+          <ul className="mt-4 space-y-3">
+            {builtIn.map((item, i) => (
+              <li key={i} className={`${cardClass} flex flex-wrap items-center gap-4`}>
+                {item.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={item.image} alt="" className="h-16 w-24 flex-none rounded-lg bg-sand-50 object-contain" />
+                ) : (
+                  <span className="h-16 w-24 flex-none rounded-lg bg-sand-50" />
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-base font-extrabold text-ink-900">{en(item.data[titleField]) || `(untitled ${noun})`}</p>
+                  <p className="text-sm text-slate-500">Built-in · Shown on the website</p>
+                </div>
+                <button type="button" onClick={() => importDefaults([item])} disabled={importing !== null} className={ghostButton}>
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Import to edit
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
