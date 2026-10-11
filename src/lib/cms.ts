@@ -54,16 +54,14 @@ async function fetchJson<T>(path: string): Promise<T | null> {
 
 type Row = Record<string, unknown> & { id: string };
 
-// Every document of a collection, in the admin's chosen order.
-async function listAll(collection: string): Promise<Row[]> {
+// Published documents of a collection, in the admin's chosen order.
+async function listPublished(collection: string): Promise<Row[]> {
   const data = await fetchJson<{ documents?: FsDoc[] }>(`${collection}?pageSize=100`);
   return (data?.documents ?? [])
     .map((doc) => ({ ...decodeFields(doc.fields ?? {}), id: doc.name.split('/').pop()! }) as Row)
+    .filter((row) => row.published !== false)
     .sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
 }
-
-const listPublished = async (collection: string) =>
-  (await listAll(collection)).filter((row) => row.published !== false);
 
 const text = (value: unknown): Text => {
   const v = (value ?? {}) as Partial<Text>;
@@ -76,7 +74,6 @@ type Lines = Record<Locale, string[]>;
 
 export type Project = {
   id: string;
-  // Empty when the project has no picture yet; a placeholder is shown instead.
   image: string;
   title: Text;
   category: Text;
@@ -150,6 +147,7 @@ const toProject = (row: Row): Project => {
 };
 
 const builtInProjects = (): Project[] => {
+  // A picture named after the project is picked up from /public/projects on its own.
   const images = readProjectImages();
   return defaultWork.map((item) => ({
     id: item.id,
@@ -157,7 +155,6 @@ const builtInProjects = (): Project[] => {
     title: item.title,
     category: item.category,
     summary: item.summary,
-<<<<<<< HEAD
     details: item.details ?? emptyText(),
     url: item.url ?? '',
     client: item.client ?? emptyText(),
@@ -168,18 +165,6 @@ const builtInProjects = (): Project[] => {
     solution: item.solution ?? emptyText(),
     result: item.result ?? emptyText(),
     features: item.features ?? { en: [], ar: [] },
-=======
-    details: emptyText(),
-    url: item.url ?? '',
-    client: emptyText(),
-    industry: emptyText(),
-    year: '',
-    services: { en: [], ar: [] },
-    challenge: emptyText(),
-    solution: emptyText(),
-    result: item.result ?? emptyText(),
-    features: { en: [], ar: [] },
->>>>>>> 02923ce677fe9014de603a43fa71606b69bac950
     technologies: item.technologies ?? [],
     stats: { en: [], ar: [] },
     rating: 0,
@@ -190,7 +175,6 @@ const builtInProjects = (): Project[] => {
   }));
 };
 
-<<<<<<< HEAD
 // The built-in projects, keyed by the website address they belong to.
 const hostOf = (url: string) => {
   try {
@@ -270,19 +254,6 @@ export async function getProjects(): Promise<Project[]> {
   });
 
   return [...projects, ...missing];
-=======
-const titleKey = (title: unknown) => text(title).en.trim().toLowerCase();
-
-// Projects from the admin come first, followed by the built-in ones. A built-in project is
-// left out once the admin has one with the same English title, shown or hidden.
-export async function getProjects(): Promise<Project[]> {
-  const rows = await listAll('projects');
-  const taken = new Set(rows.map((row) => titleKey(row.title)));
-  return [
-    ...rows.filter((row) => row.published !== false).map(toProject),
-    ...builtInProjects().filter((project) => !taken.has(titleKey(project.title))),
-  ];
->>>>>>> 02923ce677fe9014de603a43fa71606b69bac950
 }
 
 export async function getProject(id: string): Promise<Project | null> {

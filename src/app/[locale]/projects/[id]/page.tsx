@@ -170,24 +170,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
           <div className="animate-fade-up [animation-delay:300ms]">
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-[0_40px_90px_rgba(0,0,0,0.45)]">
-<<<<<<< HEAD
-              {project.image ? (
-                <Image
-                  src={project.image}
-                  alt={project.title[locale]}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 600px, 100vw"
-                  unoptimized={project.image.startsWith('/api/')}
-                  className="object-cover"
-                />
-              ) : (
-                // No picture yet: show the project name instead of an empty image.
-                <span className="bg-dots absolute inset-0 flex items-center justify-center bg-ink-950 px-8 text-center text-2xl font-extrabold text-gold-400 sm:text-3xl">
-                  {project.title[locale]}
-                </span>
-              )}
-=======
               <ProjectPicture
                 project={project}
                 locale={locale}
@@ -195,7 +177,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 priority
                 sizes="(min-width: 1024px) 600px, 100vw"
               />
->>>>>>> 02923ce677fe9014de603a43fa71606b69bac950
             </div>
           </div>
         </div>
