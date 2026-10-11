@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
@@ -6,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check, ExternalLink, Quote, Star } from 'lucide-
 import CtaBand from '@/components/CtaBand';
 import Gallery from '@/components/Gallery';
 import ProjectCard from '@/components/ProjectCard';
+import ProjectPicture from '@/components/ProjectPicture';
 import Reveal from '@/components/Reveal';
 import WebsitePreview from '@/components/WebsitePreview';
 import { getProject, getProjects } from '@/lib/cms';
@@ -170,6 +170,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
           <div className="animate-fade-up [animation-delay:300ms]">
             <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-[0_40px_90px_rgba(0,0,0,0.45)]">
+<<<<<<< HEAD
               {project.image ? (
                 <Image
                   src={project.image}
@@ -186,6 +187,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   {project.title[locale]}
                 </span>
               )}
+=======
+              <ProjectPicture
+                project={project}
+                locale={locale}
+                alt={project.title[locale]}
+                priority
+                sizes="(min-width: 1024px) 600px, 100vw"
+              />
+>>>>>>> 02923ce677fe9014de603a43fa71606b69bac950
             </div>
           </div>
         </div>

@@ -217,6 +217,7 @@ function Dashboard({ user }: { user: User }) {
             name="projects"
             noun="project"
             defaultsKey="projects"
+            defaultsStay
             titleField="title"
             intro="Projects appear on the home page and the Projects page. Each one gets its own page with the full details, a gallery, and a scrolling preview of the finished website."
             image={{ label: 'Main image (shown on the home page and project cards)', required: true, maxSide: 1600 }}

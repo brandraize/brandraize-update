@@ -5,7 +5,7 @@ import { ArrowRight, BadgeCheck } from 'lucide-react';
 type About = {
   locale: 'en' | 'ar';
 };
-
+// commm
 const content = {
   en: {
     eyebrow: 'Why Brandraize',

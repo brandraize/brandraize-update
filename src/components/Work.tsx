@@ -27,7 +27,8 @@ const content = {
 // two on a tablet and one on a phone, and the row slides when there are more than fit.
 export default async function Work({ locale }: { locale: Locale }) {
   const t = content[locale];
-  const projects = await getProjects();
+  // The home page shows the first few; the Projects page has them all.
+  const projects = (await getProjects()).slice(0, 9);
   if (projects.length === 0) return null;
 
   return (

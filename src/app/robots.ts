@@ -3,7 +3,8 @@ import { site } from '@/lib/site';
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: '*', allow: '/', disallow: ['/api/', '/admin'] },
+    // /api/img/ serves the project and client pictures, which search engines should see.
+    rules: { userAgent: '*', allow: ['/', '/api/img/'], disallow: ['/api/', '/admin'] },
     sitemap: `${site.url}/sitemap.xml`,
   };
 }
