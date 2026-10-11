@@ -152,39 +152,118 @@ const builtInProjects = (): Project[] =>
     title: item.title,
     category: item.category,
     summary: item.summary,
-    details: emptyText(),
-    url: '',
-    client: emptyText(),
-    industry: emptyText(),
-    year: '',
-    services: { en: [], ar: [] },
-    challenge: emptyText(),
-    solution: emptyText(),
-    result: emptyText(),
-    features: { en: [], ar: [] },
-    technologies: [],
+    details: item.details ?? emptyText(),
+    url: item.url ?? '',
+    client: item.client ?? emptyText(),
+    industry: item.industry ?? emptyText(),
+    year: item.year ?? '',
+    services: item.services ?? { en: [], ar: [] },
+    challenge: item.challenge ?? emptyText(),
+    solution: item.solution ?? emptyText(),
+    result: item.result ?? emptyText(),
+    features: item.features ?? { en: [], ar: [] },
+    technologies: item.technologies ?? [],
     stats: { en: [], ar: [] },
     rating: 0,
     clientQuote: emptyText(),
     clientPerson: emptyText(),
-    gallery: [],
-    fullPage: [],
+    gallery: item.gallery ?? [],
+    fullPage: item.fullPage ?? [],
   }));
+
+// The built-in projects, keyed by the website address they belong to.
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '').toLowerCase();
+  } catch {
+    return '';
+  }
+};
+
+const builtInByHost = () => {
+  const map = new Map<string, Project>();
+  for (const project of builtInProjects()) {
+    const host = hostOf(project.url);
+    if (host) map.set(host, project);
+  }
+  return map;
+};
+
+const orText = (value: Text, fallback: Text): Text => (value.en || value.ar ? value : fallback);
+const orLines = (value: Lines, fallback: Lines): Lines => (value.en.length || value.ar.length ? value : fallback);
+
+// The dashboard owns the projects, but the content prepared in the code carries the pictures
+// and details it may not have yet. A project is matched to its built-in entry by website
+// address, and only what is still missing is filled in — so a picture or text added in the
+// dashboard always wins, and deleting a project still removes it completely.
+const withBuiltInContent = (project: Project, byHost: Map<string, Project>): Project => {
+  const builtIn = byHost.get(hostOf(project.url));
+  if (!builtIn) return project;
+  return {
+    ...project,
+    image: project.image || builtIn.image,
+    gallery: project.gallery.length > 0 ? project.gallery : builtIn.gallery,
+    fullPage: project.fullPage.length > 0 ? project.fullPage : builtIn.fullPage,
+    details: orText(project.details, builtIn.details),
+    client: orText(project.client, builtIn.client),
+    industry: orText(project.industry, builtIn.industry),
+    year: project.year || builtIn.year,
+    services: orLines(project.services, builtIn.services),
+    challenge: orText(project.challenge, builtIn.challenge),
+    solution: orText(project.solution, builtIn.solution),
+    result: orText(project.result, builtIn.result),
+    features: orLines(project.features, builtIn.features),
+    technologies: project.technologies.length > 0 ? project.technologies : builtIn.technologies,
+  };
+};
+
+// The admin sets this marker the first time it adds, imports or deletes a project, so that
+// built-in projects are never shown again once the list is managed in the dashboard. Without
+// it, deleting the last project would make the built-in ones reappear on the public site.
+async function projectsManaged(): Promise<boolean> {
+  const doc = await fetchJson<FsDoc>('site/projects');
+  return doc?.fields?.managed?.booleanValue === true;
+}
 
 export async function getProjects(): Promise<Project[]> {
   const rows = await listPublished('projects');
-  return rows.length === 0 ? builtInProjects() : rows.map(toProject);
+  const byHost = builtInByHost();
+  const managed = await projectsManaged();
+
+  if (rows.length === 0) {
+    // Nothing published. Show the built-in projects only until the admin manages them here.
+    return managed ? [] : builtInProjects();
+  }
+
+  const projects = rows.map((row) => withBuiltInContent(toProject(row), byHost));
+  if (managed) return projects;
+
+  // The dashboard has not taken the list over yet, so projects that only exist in the code are
+  // shown as well. Otherwise work prepared for the site would stay invisible until it is synced,
+  // and as soon as anything is added, edited or deleted in the dashboard this stops, so a
+  // deleted project can never come back.
+  const hosts = new Set(projects.map((project) => hostOf(project.url)).filter(Boolean));
+  const names = new Set(projects.map((project) => project.title.en.trim().toLowerCase()).filter(Boolean));
+  const missing = builtInProjects().filter((project) => {
+    const host = hostOf(project.url);
+    return !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase());
+  });
+
+  return [...projects, ...missing];
 }
 
 export async function getProject(id: string): Promise<Project | null> {
-  const builtIn = builtInProjects().find((project) => project.id === id);
-  if (builtIn) return builtIn;
   if (!/^[A-Za-z0-9_-]{1,64}$/.test(id)) return null;
 
   const doc = await fetchJson<FsDoc>(`projects/${id}`);
-  if (!doc?.fields) return null;
-  const row = { ...decodeFields(doc.fields), id } as Row;
-  return row.published === false ? null : toProject(row);
+  if (doc?.fields) {
+    const row = { ...decodeFields(doc.fields), id } as Row;
+    return row.published === false ? null : withBuiltInContent(toProject(row), builtInByHost());
+  }
+
+  // Not in the database: serve a built-in project only while the admin has not taken over.
+  if (await projectsManaged()) return null;
+  return builtInProjects().find((project) => project.id === id) ?? null;
 }
 
 export type Review = { id: string; quote: Text; name: Text; project: Text; photo?: string };

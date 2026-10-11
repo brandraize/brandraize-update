@@ -13,14 +13,21 @@ export default function ProjectCard({ project, locale }: { project: Project; loc
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-sand-200 bg-white transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(11,18,32,0.10)]">
       <Link href={href} className="relative block aspect-[4/3] overflow-hidden bg-sand-50" tabIndex={-1} aria-hidden="true">
-        <Image
-          src={project.image}
-          alt=""
-          fill
-          sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
-          unoptimized={project.image.startsWith('/api/')}
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+        {project.image ? (
+          <Image
+            src={project.image}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+            unoptimized={project.image.startsWith('/api/')}
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          // A project added without a picture still gets a card that looks deliberate.
+          <span className="bg-dots absolute inset-0 flex items-center justify-center bg-ink-950 text-4xl font-extrabold text-gold-400">
+            {project.title[locale].trim().charAt(0)}
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-6">

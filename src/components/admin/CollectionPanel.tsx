@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   addDoc,
   collection,
@@ -8,6 +8,7 @@ import {
   doc,
   onSnapshot,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore';
 import { Download, ImagePlus, Loader2, Pencil, Plus, Trash2, X } from 'lucide-react';
@@ -45,7 +46,13 @@ type CollectionPanelProps = {
   defaultsKey?: 'projects' | 'clients';
 };
 
-type DefaultItem = { image: string; data: Record<string, unknown> };
+type DefaultItem = {
+  image: string;
+  data: Record<string, unknown>;
+  // Extra pictures and the full-page screenshot that come with the built-in content.
+  gallery?: string[];
+  fullPage?: string[];
+};
 
 type Item = Record<string, unknown> & {
   id: string;
@@ -74,6 +81,16 @@ type Draft = {
 
 const en = (value: unknown) =>
   typeof value === 'string' ? value : ((value as { en?: string } | undefined)?.en ?? '');
+
+// The site behind a project, used to match built-in projects to the rows already in the
+// dashboard even when their names differ.
+const hostOf = (value: unknown) => {
+  try {
+    return new URL(String(value)).hostname.replace(/^www\./, '').toLowerCase();
+  } catch {
+    return '';
+  }
+};
 
 export default function CollectionPanel({
   name,
@@ -119,23 +136,48 @@ export default function CollectionPanel({
       .catch(() => setDefaults([]));
   }, [defaultsKey]);
 
+  // Records that this collection is managed from the dashboard, so the built-in content is
+  // never shown again — not even when the last item is deleted.
+  const markManaged = () =>
+    name === 'projects' ? setDoc(doc(db, 'site', 'projects'), { managed: true }, { merge: true }) : Promise.resolve();
+
+  // Downloads one image of the built-in content, compresses it and stores it like an upload.
+  const uploadDefault = async (src: string, maxSide: number) => {
+    const blob = await (await fetch(src)).blob();
+    return saveImage(await compressImage(new File([blob], 'image'), maxSide));
+  };
+
   // Copies the built-in items into the database so they can be edited here like any other.
+  // Projects that are already in the dashboard are matched and updated instead of duplicated.
   const importDefaults = async () => {
     setError(null);
     try {
+      const nextOrder = (items.at(-1)?.order ?? 0) + 1;
       for (const [i, item] of defaults.entries()) {
         setImporting(`Importing ${i + 1} of ${defaults.length}…`);
-        const blob = await (await fetch(item.image)).blob();
-        const imageId = await saveImage(await compressImage(new File([blob], 'image'), image.maxSide));
-        await addDoc(collection(db, name), {
+        const data: Record<string, unknown> = {
           ...item.data,
-          imageId,
-          order: i + 1,
-          published: true,
-          createdAt: serverTimestamp(),
+          imageId: await uploadDefault(item.image, image.maxSide),
           updatedAt: serverTimestamp(),
-        });
+        };
+        if (item.gallery?.length) data.galleryIds = await Promise.all(item.gallery.map((src) => uploadDefault(src, 1600)));
+        if (item.fullPage?.length) data.fullPageIds = await Promise.all(item.fullPage.map((src) => uploadDefault(src, 1600)));
+
+        const existing = projectMatches.get(String(i));
+        if (existing) {
+          // Pictures this import replaces are no longer referenced by anything.
+          const stale = [
+            ...(data.imageId ? [existing.imageId] : []),
+            ...(data.galleryIds ? existing.galleryIds ?? [] : []),
+            ...(data.fullPageIds ? existing.fullPageIds ?? [] : []),
+          ].filter(Boolean) as string[];
+          await updateDoc(doc(db, name, existing.id), data);
+          await Promise.all(stale.map((id) => removeImage(id)));
+        } else {
+          await addDoc(collection(db, name), { ...data, order: nextOrder + i, published: true, createdAt: serverTimestamp() });
+        }
       }
+      await markManaged();
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -262,6 +304,7 @@ export default function CollectionPanel({
       setBusy('Saving…');
       if (draft.id) await updateDoc(doc(db, name, draft.id), data);
       else await addDoc(collection(db, name), { ...data, createdAt: serverTimestamp() });
+      await markManaged();
 
       // Pictures that were replaced or removed are no longer referenced by anything.
       await Promise.all(stale.map((id) => removeImage(id)));
@@ -277,6 +320,7 @@ export default function CollectionPanel({
     if (!window.confirm(`Delete this ${noun}? This cannot be undone.`)) return;
     try {
       await deleteDoc(doc(db, name, item.id));
+      await markManaged();
       await Promise.all(
         [item.imageId, ...(item.galleryIds ?? []), ...(item.fullPageIds ?? [])].map((id) => removeImage(id)),
       );
@@ -296,6 +340,35 @@ export default function CollectionPanel({
     );
 
   const fullPageParts = draft?.newFullPage ?? draft?.fullPageIds ?? [];
+
+  // Built-in projects matched to the rows already in the dashboard — by website address first,
+  // then by name — so importing updates them instead of creating duplicates.
+  const projectMatches = new Map<string, Item>();
+  if (defaultsKey === 'projects') {
+    for (const [i, item] of defaults.entries()) {
+      const target = hostOf(item.data.url);
+      const name = en(item.data.title).trim().toLowerCase();
+      const match = items.find(
+        (row) => (target ? hostOf(row.url) === target : false) || (name ? en(row[titleField]).trim().toLowerCase() === name : false),
+      );
+      if (match) projectMatches.set(String(i), match);
+    }
+  }
+  const pending = defaults.length - projectMatches.size;
+  const countLabel = `${noun}${defaults.length === 1 ? '' : 's'}`;
+
+  // Projects that only exist in the code are added to the dashboard as soon as it is opened, so
+  // the content prepared for the site becomes real, editable and deletable without anyone having
+  // to press a button. Once everything is there, nothing runs again.
+  const autoSynced = useRef(false);
+  useEffect(() => {
+    if (autoSynced.current || defaultsKey !== 'projects' || !loaded || error) return;
+    if (defaults.length === 0 || pending === 0) return;
+    autoSynced.current = true;
+    void importDefaults();
+    // Runs once, as soon as both lists are known.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, error, defaults.length, pending, defaultsKey]);
 
   return (
     <div>
@@ -479,24 +552,32 @@ export default function CollectionPanel({
         </form>
       )}
 
-      {!draft && loaded && items.length === 0 && !error && (
+      {!draft && loaded && !error && defaults.length > 0 && (items.length === 0 || defaultsKey === 'projects') && (
         <div className={`${cardClass} mt-5`}>
-          {defaults.length > 0 ? (
-            <>
-              <p className="font-bold text-ink-900">
-                The website is currently showing {defaults.length} built-in {noun}{defaults.length === 1 ? '' : 's'}.
-              </p>
-              <p className="mt-1 text-[15px] text-slate-600">
-                Import {defaults.length === 1 ? 'it' : 'them'} to see and edit {defaults.length === 1 ? 'it' : 'them'} here, then add more. Nothing changes on the website until you edit something.
-              </p>
-              <button type="button" onClick={importDefaults} disabled={importing !== null} className={`${primaryButton} mt-4`}>
-                {importing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
-                {importing ?? `Import ${defaults.length} ${noun}${defaults.length === 1 ? '' : 's'} from the website`}
-              </button>
-            </>
-          ) : (
-            <p className="text-slate-600">Nothing added yet. Press &ldquo;Add {noun}&rdquo; to create the first one.</p>
-          )}
+          <p className="font-bold text-ink-900">
+            {items.length === 0
+              ? `The website is currently showing ${defaults.length} built-in ${countLabel}.`
+              : pending === 0
+                ? `All ${defaults.length} built-in ${countLabel} are already in your list.`
+                : `${projectMatches.size} of the ${defaults.length} built-in ${countLabel} are already in your list, and ${pending} will be added.`}
+          </p>
+          <p className="mt-1 text-[15px] text-slate-600">
+            {items.length === 0
+              ? `Import ${defaults.length === 1 ? 'it' : 'them'} to see and edit ${defaults.length === 1 ? 'it' : 'them'} here, then add more.`
+              : pending === 0
+                ? 'Importing again refreshes their description and pictures from the content saved in the code.'
+                : 'Importing updates the ones already there and adds the missing ones, each with its pictures and full-page website screenshot.'}
+          </p>
+          <button type="button" onClick={importDefaults} disabled={importing !== null} className={`${primaryButton} mt-4`}>
+            {importing ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
+            {importing ?? (items.length === 0 ? `Import ${defaults.length} ${countLabel} from the website` : `Update ${defaults.length} ${countLabel}`)}
+          </button>
+        </div>
+      )}
+
+      {!draft && loaded && items.length === 0 && defaults.length === 0 && !error && (
+        <div className={`${cardClass} mt-5`}>
+          <p className="text-slate-600">Nothing added yet. Press &ldquo;Add {noun}&rdquo; to create the first one.</p>
         </div>
       )}
 
