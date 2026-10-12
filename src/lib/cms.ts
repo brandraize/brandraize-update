@@ -221,36 +221,34 @@ const withBuiltInContent = (project: Project, byHost: Map<string, Project>): Pro
   };
 };
 
-// The admin sets this marker the first time it adds, imports or deletes a project, so that
-// built-in projects are never shown again once the list is managed in the dashboard. Without
-// it, deleting the last project would make the built-in ones reappear on the public site.
-async function projectsManaged(): Promise<boolean> {
+// Built-in projects the admin has deleted from the dashboard. Their ids are kept so a deleted
+// project stays deleted, while projects that only exist in the code are still shown right away.
+export async function hiddenBuiltIns(): Promise<Set<string>> {
   const doc = await fetchJson<FsDoc>('site/projects');
-  return doc?.fields?.managed?.booleanValue === true;
+  const values = doc?.fields?.hidden?.arrayValue?.values ?? [];
+  return new Set(values.map((value) => value.stringValue).filter((id): id is string => Boolean(id)));
 }
 
 export async function getProjects(): Promise<Project[]> {
   const rows = await listPublished('projects');
+  const hidden = await hiddenBuiltIns();
   const byHost = builtInByHost();
-  const managed = await projectsManaged();
 
-  if (rows.length === 0) {
-    // Nothing published. Show the built-in projects only until the admin manages them here.
-    return managed ? [] : builtInProjects();
-  }
+  // Nothing in the dashboard yet, so the built-in projects are the site.
+  if (rows.length === 0) return builtInProjects().filter((project) => !hidden.has(project.id));
 
   const projects = rows.map((row) => withBuiltInContent(toProject(row), byHost));
-  if (managed) return projects;
 
-  // The dashboard has not taken the list over yet, so projects that only exist in the code are
-  // shown as well. Otherwise work prepared for the site would stay invisible until it is synced,
-  // and as soon as anything is added, edited or deleted in the dashboard this stops, so a
-  // deleted project can never come back.
+  // Projects that only exist in the code are shown as well, so work prepared for the site is
+  // never invisible. Anything added or edited in the dashboard takes precedence, and a project
+  // the admin deleted is left out for good because its id is on the hidden list.
   const hosts = new Set(projects.map((project) => hostOf(project.url)).filter(Boolean));
   const names = new Set(projects.map((project) => project.title.en.trim().toLowerCase()).filter(Boolean));
   const missing = builtInProjects().filter((project) => {
     const host = hostOf(project.url);
-    return !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase());
+    return (
+      !hidden.has(project.id) && !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase())
+    );
   });
 
   return [...projects, ...missing];
@@ -265,8 +263,8 @@ export async function getProject(id: string): Promise<Project | null> {
     return row.published === false ? null : withBuiltInContent(toProject(row), builtInByHost());
   }
 
-  // Not in the database: serve a built-in project only while the admin has not taken over.
-  if (await projectsManaged()) return null;
+  // Not in the database: serve a built-in project unless the admin deleted it.
+  if ((await hiddenBuiltIns()).has(id)) return null;
   return builtInProjects().find((project) => project.id === id) ?? null;
 }
 

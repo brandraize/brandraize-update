@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -47,6 +48,8 @@ type CollectionPanelProps = {
 };
 
 type DefaultItem = {
+  // The id of the built-in project, used to remember a deletion.
+  id: string;
   image: string;
   data: Record<string, unknown>;
   // Extra pictures and the full-page screenshot that come with the built-in content.
@@ -136,10 +139,17 @@ export default function CollectionPanel({
       .catch(() => setDefaults([]));
   }, [defaultsKey]);
 
-  // Records that this collection is managed from the dashboard, so the built-in content is
-  // never shown again — not even when the last item is deleted.
-  const markManaged = () =>
-    name === 'projects' ? setDoc(doc(db, 'site', 'projects'), { managed: true }, { merge: true }) : Promise.resolve();
+  // Remembers a deleted project so its built-in entry is never shown on the website again.
+  // The built-in project is matched by website address first, then by name.
+  const markHidden = async (item: Item) => {
+    if (name !== 'projects') return;
+    const builtIn = defaults.find((row) => {
+      const host = hostOf(row.data.url);
+      const title = en(row.data.title).trim().toLowerCase();
+      return (host ? hostOf(item.url) === host : false) || (title ? en(item[titleField]).trim().toLowerCase() === title : false);
+    });
+    if (builtIn) await setDoc(doc(db, 'site', 'projects'), { hidden: arrayUnion(builtIn.id) }, { merge: true });
+  };
 
   // Downloads one image of the built-in content, compresses it and stores it like an upload.
   const uploadDefault = async (src: string, maxSide: number) => {
@@ -177,7 +187,6 @@ export default function CollectionPanel({
           await addDoc(collection(db, name), { ...data, order: nextOrder + i, published: true, createdAt: serverTimestamp() });
         }
       }
-      await markManaged();
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -304,7 +313,6 @@ export default function CollectionPanel({
       setBusy('Saving…');
       if (draft.id) await updateDoc(doc(db, name, draft.id), data);
       else await addDoc(collection(db, name), { ...data, createdAt: serverTimestamp() });
-      await markManaged();
 
       // Pictures that were replaced or removed are no longer referenced by anything.
       await Promise.all(stale.map((id) => removeImage(id)));
@@ -320,7 +328,7 @@ export default function CollectionPanel({
     if (!window.confirm(`Delete this ${noun}? This cannot be undone.`)) return;
     try {
       await deleteDoc(doc(db, name, item.id));
-      await markManaged();
+      await markHidden(item);
       await Promise.all(
         [item.imageId, ...(item.galleryIds ?? []), ...(item.fullPageIds ?? [])].map((id) => removeImage(id)),
       );

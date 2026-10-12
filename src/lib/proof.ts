@@ -816,4 +816,256 @@ export const work: WorkItem[] = [
       '/projects/algedra-full-6.jpg',
     ],
   },
+  {
+    id: 'salem-alkahtani',
+    image: '/projects/salem-alkahtani.jpg',
+    width: 1440,
+    height: 1080,
+    title: { en: 'Salem Al Kahtani', ar: 'سالم بن علي القحطاني' },
+    category: { en: 'Election campaign website', ar: 'موقع حملة انتخابية' },
+    summary: {
+      en: 'An Arabic-first campaign website for Salem bin Ali Al Kahtani, candidate for the Real Estate Committee at the Riyadh Chamber of Commerce.',
+      ar: 'موقع حملة انتخابية بالعربية أولاً لسالم بن علي القحطاني، مرشح عضوية اللجنة العقارية بغرفة الرياض.',
+    },
+    url: 'https://salemalkahtani.com/',
+    client: { en: 'Salem bin Ali Al Kahtani', ar: 'سالم بن علي القحطاني' },
+    industry: { en: 'Real estate and chamber elections', ar: 'القطاع العقاري وانتخابات الغرفة' },
+    services: {
+      en: ['Website design', 'Website development', 'Arabic content', 'Search engine optimisation'],
+      ar: ['تصميم الموقع', 'تطوير الموقع', 'المحتوى العربي', 'تحسين محركات البحث'],
+    },
+    details: {
+      en: 'Salem bin Ali Al Kahtani stood for the Real Estate Committee of the Riyadh Chamber of Commerce in the 2025 elections. The website carries his programme in Arabic: strengthening the sector competitiveness, supporting mergers and acquisitions, backing small and medium businesses, publishing accurate reports and statistics, and the training programmes he wants to launch — all readable on a phone in a few minutes.',
+      ar: 'ترشّح سالم بن علي القحطاني لعضوية اللجنة العقارية بغرفة الرياض في انتخابات 2025. يعرض الموقع برنامجه بالعربية: تعزيز تنافسية القطاع، ودعم الاندماج والاستحواذ، ومساندة المنشآت الصغيرة والمتوسطة، ونشر تقارير وإحصاءات دقيقة، والبرامج التدريبية التي يسعى لإطلاقها — وكل ذلك قابل للقراءة من الجوال في دقائق.',
+    },
+    challenge: {
+      en: 'A candidate has a few minutes of a voter attention, on a phone, and has to make the programme and the record behind it clear from the first screen.',
+      ar: 'وقت المرشح من انتباه الناخب دقائق على الجوال، ولا بد أن يُظهر البرنامج والسجل الذي يقف خلفه بوضوح من الشاشة الأولى.',
+    },
+    solution: {
+      en: 'A calm, Arabic-first one-page website: the candidate, then the vision, the goals, the companies and the achievements, with the invitation to vote always one tap away.',
+      ar: 'موقع هادئ بالعربية على صفحة واحدة: المرشح، ثم الرؤية، ثم الأهداف، ثم الشـركات، ثم الإنجازات، مع بقاء دعوة التصويت على بُعد نقرة.',
+    },
+    result: {
+      en: 'Supporters read the whole programme from one link and share it with a single tap.',
+      ar: 'يقرأ الداعمون البرنامج كاملاً من رابط واحد ويشاركونه بنقرة واحدة.',
+    },
+    features: {
+      en: ['Arabic-first right-to-left layout', 'Candidate introduction and vision', 'Goals, companies and achievements sections', 'Real estate committee and the 2025 elections', 'Clear call to vote', 'Built to load fast on a phone'],
+      ar: ['تصميم عربي من اليمين إلى اليسار', 'تعريف بالمرشح ورؤيته', 'أقسام الأهداف والشـركات والإنجازات', 'اللجنة العقارية وانتخابات 2025', 'دعوة واضحة للتصويت', 'سريع التحميل على الجوال'],
+    },
+    technologies: ['WordPress', 'Elementor'],
+    gallery: ['/projects/salem-alkahtani-g1.jpg', '/projects/salem-alkahtani-g2.jpg'],
+    fullPage: [
+      '/projects/salem-alkahtani-full-1.jpg',
+      '/projects/salem-alkahtani-full-2.jpg',
+      '/projects/salem-alkahtani-full-3.jpg',
+      '/projects/salem-alkahtani-full-4.jpg',
+      '/projects/salem-alkahtani-full-5.jpg',
+    ],
+  },
+
+  // ── Security and AI case studies ──
+  {
+    id: 'api-security-hardening',
+    title: { en: 'Enterprise API Security Hardening', ar: 'تعزيز أمان واجهات API للمؤسسات' },
+    category: { en: 'Security & AI case study', ar: 'دراسة حالة في الأمن والذكاء الاصطناعي' },
+    summary: {
+      en: 'A full OWASP ZAP penetration test on a live Laravel and Next.js e-commerce stack. We found 12 critical SQL injection and XSS vulnerabilities, patched the code, added strict CSP headers, and enforced rate limiting.',
+      ar: 'اختبار اختراق كامل باستخدام OWASP ZAP على متجر إلكتروني يعمل بـ Laravel و Next.js. اكتشفنا 12 ثغرة حرجة من نوع حقن SQL و XSS، وأصلحنا الكود، وأضفنا ترويسات CSP صارمة، وفعّلنا تحديد معدل الطلبات.',
+    },
+    result: { en: 'Risk score dropped from 87% to 12%.', ar: 'انخفض مؤشر المخاطر من 87% إلى 12%.' },
+    technologies: ['Security Audit', 'Laravel', 'OWASP', 'Snyk'],
+  },
+  {
+    id: 'ai-contract-qa-bot',
+    title: { en: 'AI Contract Q&A Bot (RAG System)', ar: 'مساعد ذكي للإجابة عن أسئلة العقود (نظام RAG)' },
+    category: { en: 'Security & AI case study', ar: 'دراسة حالة في الأمن والذكاء الاصطناعي' },
+    summary: {
+      en: 'A secure Retrieval-Augmented Generation system built with Python (FastAPI) and LangChain. Users upload PDF contracts and legal documents and ask questions in plain language, with protection against prompt injection.',
+      ar: 'نظام آمن للتوليد المعزز بالاسترجاع مبني بـ Python (FastAPI) و LangChain. يرفع المستخدم العقود والمستندات القانونية بصيغة PDF ويسأل عنها بلغة عادية، مع حماية من هجمات حقن الأوامر.',
+    },
+    result: { en: 'Reduced document review time by 70%.', ar: 'انخفض وقت مراجعة المستندات بنسبة 70%.' },
+    technologies: ['Python', 'LangChain', 'FastAPI', 'AI Security'],
+  },
+
+  // ── E-commerce ──
+  {
+    id: 'rakhys',
+    image: '/projects/rakhys.jpg',
+    title: { en: 'Rakhys', ar: 'Rakhys' },
+    category: { en: 'E-commerce store', ar: 'متجر إلكتروني' },
+    summary: {
+      en: 'Clean e-commerce design with intuitive product categorization and fast checkout.',
+      ar: 'تصميم متجر إلكتروني بسيط بتصنيف سهل للمنتجات وإتمام سريع للطلب.',
+    },
+    gallery: ['/projects/rakhys-g1.jpg', '/projects/rakhys-g2.jpg'],
+    fullPage: [
+      '/projects/rakhys-full-1.jpg',
+      '/projects/rakhys-full-2.jpg',
+      '/projects/rakhys-full-3.jpg',
+    ],
+    url: 'https://rakhys.com',
+  },
+  {
+    id: 'lovnola',
+    title: { en: 'Lovnola', ar: 'Lovnola' },
+    category: { en: 'E-commerce store', ar: 'متجر إلكتروني' },
+    summary: {
+      en: 'Modern branding-forward e-commerce with lifestyle product photography.',
+      ar: 'متجر إلكتروني عصري يبرز هوية العلامة مع تصوير للمنتجات بأسلوب الحياة اليومية.',
+    },
+    url: 'https://lovnola.com',
+  },
+
+  // ── Corporate ──
+  {
+    id: 'qmt-almmyez',
+    title: { en: 'QMT Al-Mmyez', ar: 'QMT Al-Mmyez' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Structured corporate content site with organized service sections.',
+      ar: 'موقع شركة بمحتوى منظم وأقسام مرتبة للخدمات.',
+    },
+    url: 'https://qmt-almmyez.com',
+  },
+  {
+    id: 'alkadi-pastures',
+    image: '/projects/alkadi-pastures.jpg',
+    title: { en: 'Al-Kadi Pastures', ar: 'Al-Kadi Pastures' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Arabic-localized business site with full right-to-left support and a culturally fitting design.',
+      ar: 'موقع أعمال باللغة العربية بدعم كامل للاتجاه من اليمين إلى اليسار وتصميم يناسب الثقافة المحلية.',
+    },
+    gallery: ['/projects/alkadi-pastures-g1.jpg', '/projects/alkadi-pastures-g2.jpg'],
+    fullPage: [
+      '/projects/alkadi-pastures-full-1.jpg',
+      '/projects/alkadi-pastures-full-2.jpg',
+      '/projects/alkadi-pastures-full-3.jpg',
+      '/projects/alkadi-pastures-full-4.jpg',
+      '/projects/alkadi-pastures-full-5.jpg',
+    ],
+    url: 'https://alkadipastures.com/ar',
+  },
+  {
+    id: 'abdao-almontaj',
+    title: { en: 'Abdao Al-Montaj', ar: 'Abdao Al-Montaj' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Industrial company profile with a clear identity and service showcase.',
+      ar: 'ملف تعريفي لشركة صناعية بهوية واضحة وعرض للخدمات.',
+    },
+    url: 'https://abdao-almontaj.com',
+  },
+  {
+    id: 'mendar',
+    title: { en: 'Mendar', ar: 'Mendar' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Modern service-focused layout with clean typography and structured content.',
+      ar: 'تصميم عصري يركز على الخدمات بخطوط واضحة ومحتوى منظم.',
+    },
+    url: 'https://mendar.sa',
+  },
+  {
+    id: 'mayasm',
+    title: { en: 'Mayasm', ar: 'Mayasm' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Elegant brand site with a sophisticated visual identity and premium feel.',
+      ar: 'موقع علامة تجارية أنيق بهوية بصرية راقية وطابع فاخر.',
+    },
+    url: 'https://mayasm.sa',
+  },
+  {
+    id: 'flah-r',
+    title: { en: 'Flah-R', ar: 'Flah-R' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Clear navigation and well-organized service sections for business presentation.',
+      ar: 'تنقل واضح وأقسام خدمات مرتبة لعرض أعمال الشركة.',
+    },
+    url: 'https://flah-r.com',
+  },
+  {
+    id: 'rajee',
+    image: '/projects/rajee.jpg',
+    title: { en: 'Rajee', ar: 'Rajee' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Structured services platform with an intuitive user journey and clear calls to action.',
+      ar: 'منصة خدمات منظمة برحلة مستخدم سهلة ودعوات واضحة للتواصل.',
+    },
+    gallery: ['/projects/rajee-g1.jpg', '/projects/rajee-g2.jpg'],
+    fullPage: ['/projects/rajee-full-1.jpg', '/projects/rajee-full-2.jpg'],
+    url: 'https://rajee-sa.com',
+  },
+  {
+    id: 'ayal',
+    image: '/projects/ayal.jpg',
+    title: { en: 'Ayal', ar: 'Ayal' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Modern responsive company site with clean design and professional branding.',
+      ar: 'موقع شركة عصري ومتجاوب بتصميم بسيط وهوية احترافية.',
+    },
+    gallery: ['/projects/ayal-g1.jpg', '/projects/ayal-g2.jpg'],
+    fullPage: [
+      '/projects/ayal-full-1.jpg',
+      '/projects/ayal-full-2.jpg',
+      '/projects/ayal-full-3.jpg',
+    ],
+    url: 'https://ayalsa.com',
+  },
+  {
+    id: 'tec-org',
+    image: '/projects/tec-org.jpg',
+    title: { en: 'Tec-Org', ar: 'Tech Org' },
+    category: { en: 'Corporate website', ar: 'موقع شركة' },
+    summary: {
+      en: 'Corporate identity site for a technology organisation, with a structured content hierarchy.',
+      ar: 'موقع هوية مؤسسية لمنظمة تقنية، بتسلسل منظم للمحتوى.',
+    },
+    gallery: ['/projects/tec-org-g1.jpg', '/projects/tec-org-g2.jpg'],
+    fullPage: [
+      '/projects/tec-org-full-1.jpg',
+      '/projects/tec-org-full-2.jpg',
+      '/projects/tec-org-full-3.jpg',
+      '/projects/tec-org-full-4.jpg',
+      '/projects/tec-org-full-5.jpg',
+      '/projects/tec-org-full-6.jpg',
+    ],
+    url: 'https://tec-org.com',
+  },
+
+  // ── Restaurant and web apps ──
+  {
+    id: 'marhaba-restaurants',
+    image: '/projects/marhaba-restaurants.jpg',
+    title: { en: 'Marhaba Restaurants', ar: 'مطاعم مرحبا' },
+    category: { en: 'Restaurant website', ar: 'موقع مطعم' },
+    summary: {
+      en: 'Restaurant chain site with a digital menu and customer-focused design.',
+      ar: 'موقع سلسلة مطاعم مع قائمة طعام رقمية وتصميم يركز على العميل.',
+    },
+    gallery: ['/projects/marhaba-restaurants-g1.jpg', '/projects/marhaba-restaurants-g2.jpg'],
+    fullPage: [
+      '/projects/marhaba-restaurants-full-1.jpg',
+      '/projects/marhaba-restaurants-full-2.jpg',
+      '/projects/marhaba-restaurants-full-3.jpg',
+      '/projects/marhaba-restaurants-full-4.jpg',
+    ],
+    url: 'https://marhabarestaurants.com',
+  },
+  {
+    id: 'happy-face',
+    title: { en: 'Happy Face', ar: 'Happy Face' },
+    category: { en: 'Web app', ar: 'تطبيق ويب' },
+    summary: {
+      en: 'Web application interface with intuitive user experience and a structured feature layout.',
+      ar: 'واجهة تطبيق ويب بتجربة استخدام سهلة وترتيب منظم للمزايا.',
+    },
+    url: 'https://app.happy-face.co/en',
+  },
 ];
