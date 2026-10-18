@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   addDoc,
   arrayUnion,
@@ -378,19 +378,6 @@ export default function CollectionPanel({
   }
   const pending = defaults.length - projectMatches.size;
   const countLabel = `${noun}${defaults.length === 1 ? '' : 's'}`;
-
-  // Projects that only exist in the code are added to the dashboard as soon as it is opened, so
-  // the content prepared for the site becomes real, editable and deletable without anyone having
-  // to press a button. Once everything is there, nothing runs again.
-  const autoSynced = useRef(false);
-  useEffect(() => {
-    if (autoSynced.current || defaultsKey !== 'projects' || !loaded || error) return;
-    if (defaults.length === 0 || pending === 0) return;
-    autoSynced.current = true;
-    void importDefaults();
-    // Runs once, as soon as both lists are known.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, error, defaults.length, pending, defaultsKey]);
 
   return (
     <div>

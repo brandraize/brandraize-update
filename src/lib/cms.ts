@@ -245,21 +245,10 @@ export async function getProjects(): Promise<Project[]> {
   // Nothing in the dashboard yet, so the built-in projects are the site.
   if (rows.length === 0) return builtInProjects().filter((project) => !isHiddenBuiltIn(project, hidden));
 
-  const projects = rows.map((row) => withBuiltInContent(toProject(row), byHost));
-
-  // Projects that only exist in the code are shown as well, so work prepared for the site is
-  // never invisible. Anything added or edited in the dashboard takes precedence, and a project
-  // the admin deleted is left out for good because its id is on the hidden list.
-  const hosts = new Set(projects.map((project) => hostOf(project.url)).filter(Boolean));
-  const names = new Set(projects.map((project) => project.title.en.trim().toLowerCase()).filter(Boolean));
-  const missing = builtInProjects().filter((project) => {
-    const host = hostOf(project.url);
-    return (
-      !isHiddenBuiltIn(project, hidden) && !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase())
-    );
-  });
-
-  return [...projects, ...missing];
+  // Once the dashboard has projects it owns the list: exactly what is there is shown, so a
+  // project deleted in the dashboard is gone from the site. Built-in projects can still be
+  // brought in with the dashboard's import button.
+  return rows.map((row) => withBuiltInContent(toProject(row), byHost));
 }
 
 export async function getProject(id: string): Promise<Project | null> {
@@ -271,7 +260,9 @@ export async function getProject(id: string): Promise<Project | null> {
     return row.published === false ? null : withBuiltInContent(toProject(row), builtInByHost());
   }
 
-  // Not in the database: serve a built-in project unless the admin deleted it.
+  // Not in the database: serve a built-in project only while the dashboard has none of its
+  // own (as on the projects list), and never one the admin deleted.
+  if ((await listPublished('projects')).length > 0) return null;
   const builtIn = builtInProjects().find((project) => project.id === id);
   if (!builtIn || isHiddenBuiltIn(builtIn, await hiddenBuiltIns())) return null;
   return builtIn;
