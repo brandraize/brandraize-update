@@ -6,6 +6,7 @@ import CtaBand from '@/components/CtaBand';
 import Gallery from '@/components/Gallery';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectPicture from '@/components/ProjectPicture';
+import ScrollingCover from '@/components/ScrollingCover';
 import Reveal from '@/components/Reveal';
 import WebsitePreview from '@/components/WebsitePreview';
 import { getProject, getProjects } from '@/lib/cms';
@@ -169,14 +170,18 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           </div>
 
           <div className="animate-fade-up [animation-delay:300ms]">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-[0_40px_90px_rgba(0,0,0,0.45)]">
-              <ProjectPicture
-                project={project}
-                locale={locale}
-                alt={project.title[locale]}
-                priority
-                sizes="(min-width: 1024px) 600px, 100vw"
-              />
+            <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-[0_40px_90px_rgba(0,0,0,0.45)]">
+              {project.fullPage.length > 0 ? (
+                <ScrollingCover strips={project.fullPage} alt={project.title[locale]} />
+              ) : (
+                <ProjectPicture
+                  project={project}
+                  locale={locale}
+                  alt={project.title[locale]}
+                  priority
+                  sizes="(min-width: 1024px) 600px, 100vw"
+                />
+              )}
             </div>
           </div>
         </div>
