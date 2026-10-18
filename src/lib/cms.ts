@@ -221,13 +221,21 @@ const withBuiltInContent = (project: Project, byHost: Map<string, Project>): Pro
   };
 };
 
-// Built-in projects the admin has deleted from the dashboard. Their ids are kept so a deleted
-// project stays deleted, while projects that only exist in the code are still shown right away.
+// Projects the admin has deleted from the dashboard, so a deleted project stays deleted while
+// projects that only exist in the code are still shown right away. The list holds the built-in
+// project's id and also "host:<website>" and "title:<english name>" for every deleted project,
+// so its built-in copy is recognised even when the dashboard could not match it to one.
 export async function hiddenBuiltIns(): Promise<Set<string>> {
   const doc = await fetchJson<FsDoc>('site/projects');
   const values = doc?.fields?.hidden?.arrayValue?.values ?? [];
   return new Set(values.map((value) => value.stringValue).filter((id): id is string => Boolean(id)));
 }
+
+export const isHiddenBuiltIn = (project: { id: string; url?: string; title: Text }, hidden: Set<string>) => {
+  const host = hostOf(project.url ?? '');
+  const title = project.title.en.trim().toLowerCase();
+  return hidden.has(project.id) || (host !== '' && hidden.has(`host:${host}`)) || (title !== '' && hidden.has(`title:${title}`));
+};
 
 export async function getProjects(): Promise<Project[]> {
   const rows = await listPublished('projects');
@@ -235,7 +243,7 @@ export async function getProjects(): Promise<Project[]> {
   const byHost = builtInByHost();
 
   // Nothing in the dashboard yet, so the built-in projects are the site.
-  if (rows.length === 0) return builtInProjects().filter((project) => !hidden.has(project.id));
+  if (rows.length === 0) return builtInProjects().filter((project) => !isHiddenBuiltIn(project, hidden));
 
   const projects = rows.map((row) => withBuiltInContent(toProject(row), byHost));
 
@@ -247,7 +255,7 @@ export async function getProjects(): Promise<Project[]> {
   const missing = builtInProjects().filter((project) => {
     const host = hostOf(project.url);
     return (
-      !hidden.has(project.id) && !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase())
+      !isHiddenBuiltIn(project, hidden) && !(host && hosts.has(host)) && !names.has(project.title.en.trim().toLowerCase())
     );
   });
 
@@ -264,8 +272,9 @@ export async function getProject(id: string): Promise<Project | null> {
   }
 
   // Not in the database: serve a built-in project unless the admin deleted it.
-  if ((await hiddenBuiltIns()).has(id)) return null;
-  return builtInProjects().find((project) => project.id === id) ?? null;
+  const builtIn = builtInProjects().find((project) => project.id === id);
+  if (!builtIn || isHiddenBuiltIn(builtIn, await hiddenBuiltIns())) return null;
+  return builtIn;
 }
 
 export type Review = { id: string; quote: Text; name: Text; project: Text; photo?: string };

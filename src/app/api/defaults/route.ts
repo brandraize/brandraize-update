@@ -1,4 +1,4 @@
-import { hiddenBuiltIns } from '@/lib/cms';
+import { hiddenBuiltIns, isHiddenBuiltIn } from '@/lib/cms';
 import { readLocalLogos } from '@/lib/local-logos';
 import { readProjectImages } from '@/lib/local-projects';
 import { work } from '@/lib/proof';
@@ -18,7 +18,7 @@ export async function GET() {
   const hidden = await hiddenBuiltIns();
   return Response.json({
     projects: work
-      .filter((item) => !hidden.has(item.id))
+      .filter((item) => !isHiddenBuiltIn(item, hidden))
       .map((item) => ({
         id: item.id,
         image: item.image ?? images.get(item.id) ?? '',

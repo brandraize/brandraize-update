@@ -13,7 +13,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { Download, ImagePlus, Loader2, Pencil, Plus, Trash2, X } from 'lucide-react';
-import { db } from '@/lib/firebase/client';
+import { db, refreshSite } from '@/lib/firebase/client';
 import { compressImage, removeImage, saveImage, sliceTallImage } from '@/lib/firebase/images';
 import { cardClass, dangerButton, errorMessage, ghostButton, inputClass, labelClass, primaryButton } from './ui';
 
@@ -139,16 +139,25 @@ export default function CollectionPanel({
       .catch(() => setDefaults([]));
   }, [defaultsKey]);
 
-  // Remembers a deleted project so its built-in entry is never shown on the website again.
-  // The built-in project is matched by website address first, then by name.
+  // Remembers a deleted project so its built-in entry is never shown on the website or imported
+  // again. Its website address and name are always recorded, so this works even before the
+  // built-in list has loaded; the matching built-in project's id is added when it is known.
   const markHidden = async (item: Item) => {
     if (name !== 'projects') return;
-    const builtIn = defaults.find((row) => {
-      const host = hostOf(row.data.url);
-      const title = en(row.data.title).trim().toLowerCase();
-      return (host ? hostOf(item.url) === host : false) || (title ? en(item[titleField]).trim().toLowerCase() === title : false);
-    });
-    if (builtIn) await setDoc(doc(db, 'site', 'projects'), { hidden: arrayUnion(builtIn.id) }, { merge: true });
+    const host = hostOf(item.url);
+    const title = en(item[titleField]).trim().toLowerCase();
+    const matches = (row: DefaultItem) => {
+      const rowHost = hostOf(row.data.url);
+      const rowTitle = en(row.data.title).trim().toLowerCase();
+      return (rowHost !== '' && rowHost === host) || (rowTitle !== '' && rowTitle === title);
+    };
+    const keys = [
+      ...defaults.filter(matches).map((row) => row.id),
+      ...(host ? [`host:${host}`] : []),
+      ...(title ? [`title:${title}`] : []),
+    ];
+    if (keys.length > 0) await setDoc(doc(db, 'site', 'projects'), { hidden: arrayUnion(...keys) }, { merge: true });
+    setDefaults((rows) => rows.filter((row) => !matches(row)));
   };
 
   // Downloads one image of the built-in content, compresses it and stores it like an upload.
@@ -187,6 +196,7 @@ export default function CollectionPanel({
           await addDoc(collection(db, name), { ...data, order: nextOrder + i, published: true, createdAt: serverTimestamp() });
         }
       }
+      await refreshSite();
     } catch (e) {
       setError(errorMessage(e));
     } finally {
@@ -313,6 +323,7 @@ export default function CollectionPanel({
       setBusy('Saving…');
       if (draft.id) await updateDoc(doc(db, name, draft.id), data);
       else await addDoc(collection(db, name), { ...data, createdAt: serverTimestamp() });
+      await refreshSite();
 
       // Pictures that were replaced or removed are no longer referenced by anything.
       await Promise.all(stale.map((id) => removeImage(id)));
@@ -327,8 +338,11 @@ export default function CollectionPanel({
   const remove = async (item: Item) => {
     if (!window.confirm(`Delete this ${noun}? This cannot be undone.`)) return;
     try {
-      await deleteDoc(doc(db, name, item.id));
+      // Hidden first: if that fails, nothing is deleted and the error is shown, instead of the
+      // project disappearing here while its built-in copy stays on the website.
       await markHidden(item);
+      await deleteDoc(doc(db, name, item.id));
+      await refreshSite();
       await Promise.all(
         [item.imageId, ...(item.galleryIds ?? []), ...(item.fullPageIds ?? [])].map((id) => removeImage(id)),
       );

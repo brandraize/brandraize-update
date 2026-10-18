@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { deleteDoc, doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { ArrowDown, ArrowUp, Loader2, Plus, Trash2 } from 'lucide-react';
-import { db } from '@/lib/firebase/client';
+import { db, refreshSite } from '@/lib/firebase/client';
 import { serviceGroups as builtIn, type Service } from '@/lib/services';
 import { cardClass, dangerButton, errorMessage, ghostButton, inputClass, labelClass, primaryButton } from './ui';
 
@@ -114,7 +114,8 @@ export default function ServicesPanel() {
       await setDoc(doc(db, 'site', 'services'), { json: JSON.stringify(groups), updatedAt: serverTimestamp() });
       setDirty(false);
       setCustomised(true);
-      setMessage({ ok: true, text: 'Saved. The website shows the change within about a minute.' });
+      await refreshSite();
+      setMessage({ ok: true, text: 'Saved. The website now shows the change.' });
     } catch (e) {
       setMessage({ ok: false, text: errorMessage(e) });
     } finally {
@@ -131,6 +132,7 @@ export default function ServicesPanel() {
       setSelected([0, 0]);
       setDirty(false);
       setCustomised(false);
+      await refreshSite();
       setMessage({ ok: true, text: 'Restored the original services.' });
     } catch (e) {
       setMessage({ ok: false, text: errorMessage(e) });
