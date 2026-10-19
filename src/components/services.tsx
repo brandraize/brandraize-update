@@ -135,7 +135,7 @@ function FeatureCard({ feature, locale, more }: { feature: Feature; locale: Loca
 
   return (
     <Link
-      href={`/${locale}/service#${feature.slug}`}
+      href={`/${locale}/service/${feature.slug}`}
       className="group flex h-full items-start gap-4 rounded-2xl border border-sand-200 bg-white p-5 transition-all sm:flex-col sm:gap-0 sm:rounded-3xl sm:p-7 duration-300 hover:-translate-y-1 hover:border-gold-500/60 hover:shadow-[0_18px_40px_rgba(11,18,32,0.08)]"
     >
       <span className="flex h-12 w-12 flex-none items-center justify-center rounded-2xl bg-ink-900 text-gold-400 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110">

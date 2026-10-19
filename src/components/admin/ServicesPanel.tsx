@@ -203,7 +203,7 @@ export default function ServicesPanel() {
           <div className={`${cardClass} space-y-5`}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-500">
-                Link: <span className="font-mono">/service#{service.slug}</span>
+                Link: <span className="font-mono">/service/{service.slug}</span>
               </p>
               <div className="flex gap-2">
                 <button type="button" onClick={() => move(-1)} aria-label="Move up" className={ghostButton}>

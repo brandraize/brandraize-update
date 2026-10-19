@@ -104,7 +104,7 @@ export default function Footer({ lang }: FooterProps) {
             <ul className="mt-5 space-y-3">
               {serviceLinks.map((service) => (
                 <li key={service.slug}>
-                  <Link href={`/${lang}/service#${service.slug}`} className={linkClass}>
+                  <Link href={`/${lang}/service/${service.slug}`} className={linkClass}>
                     {service.label[lang]}
                   </Link>
                 </li>

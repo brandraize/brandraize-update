@@ -76,7 +76,11 @@ function ServiceCard({ service, locale, flip }: { service: Service; locale: Loca
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink-900 text-gold-400 transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110 sm:h-14 sm:w-14">
             <Icon className="h-6 w-6 sm:h-7 sm:w-7" aria-hidden="true" />
           </span>
-          <h3 className="mt-4 text-xl font-extrabold text-ink-900 sm:mt-5 sm:text-[1.7rem]">{name}</h3>
+          <h3 className="mt-4 text-xl font-extrabold text-ink-900 sm:mt-5 sm:text-[1.7rem]">
+            <Link href={`/${locale}/service/${service.slug}`} className="transition-colors hover:text-gold-700">
+              {name}
+            </Link>
+          </h3>
           <p className="mt-1.5 text-base font-bold leading-snug text-gold-700 sm:mt-2 sm:text-lg">{service.tagline[locale]}</p>
           <p className="mt-4 hidden text-base leading-relaxed text-slate-600 sm:block">{service.description[locale]}</p>
           <p className="mt-3 text-[15px] leading-relaxed text-slate-600 sm:mt-4">

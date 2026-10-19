@@ -125,7 +125,7 @@ export default function Navbar({ lang }: { lang: Lang }) {
       href: "/service",
       label: lang === "ar" ? "الخدمات" : "Services",
       children: serviceLinks.map((s) => ({
-        href: `/service#${s.slug}`,
+        href: `/service/${s.slug}`,
         label: s.label[lang],
       })),
     },

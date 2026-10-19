@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 import { Tajawal } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
+import AiAgent from '@/components/AiAgent';
 import Analytics from '@/components/Analytics';
 import { WhatsAppFloat } from '@/components/ContactLink';
 import Header from '@/components/Header';
@@ -113,6 +114,7 @@ export default async function LocaleLayout({
 
           <Footer lang={locale} />
           <WhatsAppFloat locale={locale} />
+         {/* <AiAgent locale={locale} /> */}
         </NextIntlClientProvider>
         <Analytics />
       </body>
