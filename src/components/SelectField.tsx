@@ -60,7 +60,7 @@ export default function SelectField({ id, value, onChange, placeholder, options,
         onKeyDown={onKeyDown}
         className={`${className} flex items-center justify-between gap-3 text-start`}
       >
-        <span className={value ? '' : 'text-slate-400'}>{value || placeholder}</span>
+        <span className={value ? '' : 'text-slate-500'}>{value || placeholder}</span>
         <ChevronDown
           className={`h-4 w-4 flex-none text-slate-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           aria-hidden="true"

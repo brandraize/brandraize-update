@@ -58,7 +58,7 @@ const copy = {
 const empty = { name: '', phone: '', email: '', service: '', message: '', website: '' };
 
 const fieldClass =
-  'w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-[15px] text-ink-900 placeholder:text-slate-400 transition-colors focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20';
+  'w-full rounded-xl border border-sand-200 bg-white px-4 py-3 text-[15px] text-ink-900 placeholder:text-slate-500 transition-colors focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-500/20';
 const labelClass = 'mb-1.5 block text-sm font-semibold text-ink-800';
 
 export default function LeadForm({ locale, source }: LeadFormProps) {

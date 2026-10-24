@@ -31,7 +31,7 @@ export default function TechSlider({ locale }: TechSliderProps) {
 
   return (
     <section className="overflow-hidden border-y border-sand-200 bg-sand-50 py-10 sm:py-14">
-      <p className="px-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-slate-500">
+      <p className="px-4 text-center text-sm font-bold uppercase tracking-[0.18em] text-slate-600">
         {isRtl ? 'نبني بتقنيات حديثة وموثوقة' : 'Built with modern, proven technology'}
       </p>
 
@@ -45,7 +45,7 @@ export default function TechSlider({ locale }: TechSliderProps) {
             <li
               key={i}
               aria-hidden={i >= tech.length}
-              className="mx-6 flex items-center gap-2.5 text-lg font-bold text-slate-500"
+              className="mx-6 flex items-center gap-2.5 text-lg font-bold text-slate-600"
             >
               <Icon size={24} aria-hidden="true" />
               {name}
