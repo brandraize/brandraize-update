@@ -54,7 +54,7 @@ const content: Record<
         icon: ChartNoAxesCombined,
       },
       {
-        title: "Branding & Graphic Design",
+        title: "UI/UX & Brand Design",
         description:
           "Distinctive brand identities and visual design that set your business apart in the Saudi market.",
         slug: "ui-ux-design",
@@ -106,7 +106,7 @@ const content: Record<
         icon: ChartNoAxesCombined,
       },
       {
-        title: "التصميم والهوية البصرية",
+        title: "تصميم UI/UX والهوية",
         description:
           "هويات تجارية مميزة وتصاميم احترافية تميّز أعمالك في السوق السعودي.",
         slug: "ui-ux-design",
