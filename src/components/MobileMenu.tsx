@@ -138,7 +138,7 @@ export default function MobileMenu({ lang, open, onClose, path, switchHref }: Mo
       />
 
       {/* Panel */}
-      <aside
+      <div
         role="dialog"
         aria-modal="true"
         aria-label={t.menu}
@@ -252,7 +252,7 @@ export default function MobileMenu({ lang, open, onClose, path, switchHref }: Mo
               href={whatsappHref(lang)}
               method="whatsapp"
               source="mobile_menu"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] px-4 py-3 text-sm font-bold text-white"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#0f7a40] px-4 py-3 text-sm font-bold text-white"
             >
               <FaWhatsapp size={18} aria-hidden="true" />
               {t.whatsapp}
@@ -294,7 +294,7 @@ export default function MobileMenu({ lang, open, onClose, path, switchHref }: Mo
             </div>
           </div>
         </div>
-      </aside>
+      </div>
     </div>
   );
 }

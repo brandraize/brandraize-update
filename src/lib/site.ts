@@ -1,5 +1,8 @@
 export const locales = ['en', 'ar'] as const;
 export type Locale = (typeof locales)[number];
+// Arabic is the primary market: `/` and visitors with no language preference land on /ar,
+// and it is the hreflang x-default.
+export const defaultLocale: Locale = 'ar';
 
 export const toLocale = (value: string): Locale => (value === 'ar' ? 'ar' : 'en');
 

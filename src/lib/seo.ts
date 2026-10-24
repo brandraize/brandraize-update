@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { site, type Locale } from './site';
+import { defaultLocale, site, type Locale } from './site';
 
 // Canonical + hreflang + social card for a page. `path` is the part after the locale ("" for home).
 export function pageMetadata(
@@ -24,7 +24,7 @@ export function pageMetadata(
       languages: {
         en: `/en${path}`,
         ar: `/ar${path}`,
-        'x-default': `/en${path}`,
+        'x-default': `/${defaultLocale}${path}`,
       },
     },
     openGraph: {

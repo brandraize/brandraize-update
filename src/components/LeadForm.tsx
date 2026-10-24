@@ -109,7 +109,7 @@ export default function LeadForm({ locale, source }: LeadFormProps) {
           href={whatsappHref(locale)}
           method="whatsapp"
           source={`${source}_success`}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#25d366] px-6 py-3 text-sm font-bold text-white"
+          className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7a40] px-6 py-3 text-sm font-bold text-white"
         >
           <FaWhatsapp size={18} aria-hidden="true" />
           {t.whatsapp}
@@ -224,7 +224,7 @@ export default function LeadForm({ locale, source }: LeadFormProps) {
             href={whatsappHref(locale, whatsappText)}
             method="whatsapp"
             source={`${source}_fallback`}
-            className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[#25d366] px-5 py-2.5 text-sm font-bold text-white"
+            className="mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7a40] px-5 py-2.5 text-sm font-bold text-white"
           >
             <FaWhatsapp size={18} aria-hidden="true" />
             {t.whatsapp}

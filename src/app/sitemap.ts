@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { getProjects, getServiceGroups } from '@/lib/cms';
-import { locales, site } from '@/lib/site';
+import { defaultLocale, locales, site } from '@/lib/site';
 
 const paths = ['', '/service', '/projects', '/about', '/contact', '/privacy', '/terms'];
 
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: {
         languages: {
           ...Object.fromEntries(locales.map((l) => [l, `${site.url}/${l}${path}`])),
-          'x-default': `${site.url}/en${path}`,
+          'x-default': `${site.url}/${defaultLocale}${path}`,
         },
       },
     })),

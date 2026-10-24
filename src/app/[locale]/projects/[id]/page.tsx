@@ -172,7 +172,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="animate-fade-up [animation-delay:300ms]">
             <div className="group relative aspect-[4/3] overflow-hidden rounded-3xl bg-white shadow-[0_40px_90px_rgba(0,0,0,0.45)]">
               {project.fullPage.length > 0 ? (
-                <ScrollingCover strips={project.fullPage} alt={project.title[locale]} />
+                <ScrollingCover
+                  strips={project.fullPage}
+                  alt={project.title[locale]}
+                  sizes="(min-width: 1024px) 600px, 100vw"
+                />
               ) : (
                 <ProjectPicture
                   project={project}

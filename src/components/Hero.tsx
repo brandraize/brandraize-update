@@ -70,11 +70,11 @@ export default function Hero({ locale }: HeroProps) {
             {t.eyebrow}
           </p>
 
-          <h1 className="mt-6 animate-fade-up text-4xl [animation-delay:100ms] font-extrabold leading-[1.15] sm:text-5xl lg:text-[3.4rem]">
+          <h1 className="mt-6 text-4xl font-extrabold leading-[1.15] sm:text-5xl lg:text-[3.4rem]">
             {t.title}
           </h1>
 
-          <p className="mt-6 max-w-xl animate-fade-up text-lg leading-relaxed text-white/75 [animation-delay:200ms]">{t.subtitle}</p>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-white/75">{t.subtitle}</p>
 
           <ul className="mt-7 animate-fade-up space-y-3 [animation-delay:300ms]">
             {t.points.map((point) => (
@@ -92,7 +92,7 @@ export default function Hero({ locale }: HeroProps) {
               href={whatsappHref(locale)}
               method="whatsapp"
               source="hero"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25d366] px-7 py-3.5 text-base font-bold text-white transition-opacity hover:opacity-90"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f7a40] px-7 py-3.5 text-base font-bold text-white transition-opacity hover:opacity-90"
             >
               <FaWhatsapp size={20} aria-hidden="true" />
               {t.whatsapp}

@@ -1,7 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
 import { Pause, Play } from 'lucide-react';
+import { STRIP_HEIGHT, STRIP_WIDTH } from '@/components/ScrollingCover';
 
 type WebsitePreviewProps = {
   // The full-page screenshot, as strips stacked top to bottom.
@@ -98,9 +100,15 @@ export default function WebsitePreview({ strips, address, labels }: WebsitePrevi
         className="h-[60vh] max-h-[640px] min-h-[320px] overflow-y-auto overscroll-contain [scrollbar-width:thin]"
       >
         {strips.map((src) => (
-          // Strips are pre-compressed uploads of unknown height, so they are plain images.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img key={src} src={src} alt="" loading="lazy" className="block w-full" />
+          <Image
+            key={src}
+            src={src}
+            alt=""
+            width={STRIP_WIDTH}
+            height={STRIP_HEIGHT}
+            sizes="(min-width: 1024px) 1024px, 100vw"
+            className="block h-auto w-full"
+          />
         ))}
       </div>
 

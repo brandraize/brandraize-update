@@ -55,7 +55,7 @@ export default async function ClientLogos({ locale }: { locale: Locale }) {
                     alt={logo.name}
                     fill
                     sizes="200px"
-                    unoptimized={logo.src.endsWith('.svg') || logo.src.startsWith('/api/')}
+                    unoptimized={logo.src.endsWith('.svg')}
                     className="object-contain"
                   />
                   </span>

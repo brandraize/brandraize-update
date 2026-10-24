@@ -6,21 +6,20 @@ type LogoProps = {
   priority?: boolean;
 };
 
-// The animated Brandraize logo. /logo-animated.gif is the draw-in half of /logo1.gif: it draws
-// itself in, holds for 10 seconds, then replays (the original spent half of every loop blank).
-// The file is a square with empty space above and below the mark, so it is cropped to the mark here.
+// The animated Brandraize logo. /logo-animated.webp is /logo-animated.gif (the draw-in half of
+// /logo1.gif) cropped to the mark and scaled to 258×112, twice the header size: it draws itself
+// in, holds for 10 seconds, then replays. Above the fold it loads eagerly, but without a preload
+// so it does not compete with the hero text for bandwidth.
 export default function Logo({ className = 'h-12', priority = false }: LogoProps) {
   return (
-    <span className={`relative block aspect-[23/10] overflow-hidden ${className}`}>
-      <Image
-        src="/logo-animated.gif"
-        alt="Brandraize"
-        width={1296}
-        height={1296}
-        unoptimized
-        priority={priority}
-        className="absolute inset-0 h-full w-full object-cover object-[50%_53%]"
-      />
-    </span>
+    <Image
+      src="/logo-animated.webp"
+      alt="Brandraize"
+      width={258}
+      height={112}
+      unoptimized
+      loading={priority ? 'eager' : 'lazy'}
+      className={`block aspect-[258/112] w-auto ${className}`}
+    />
   );
 }

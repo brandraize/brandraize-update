@@ -41,7 +41,6 @@ export default function ProjectPicture({ project, locale, sizes, alt = '', prior
       fill
       priority={priority}
       sizes={sizes}
-      unoptimized={project.image.startsWith('/api/')}
       className={`object-cover ${className}`}
     />
   );

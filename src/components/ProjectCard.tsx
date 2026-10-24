@@ -15,7 +15,10 @@ export default function ProjectCard({ project, locale }: { project: Project; loc
     <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-sand-200 bg-white transition-shadow duration-300 hover:shadow-[0_24px_60px_rgba(11,18,32,0.10)]">
       <Link href={href} className="relative block aspect-[4/3] overflow-hidden bg-sand-50" tabIndex={-1} aria-hidden="true">
         {project.fullPage.length > 0 ? (
-          <ScrollingCover strips={project.fullPage} />
+          <ScrollingCover
+            strips={project.fullPage}
+            sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+          />
         ) : (
           <ProjectPicture
             project={project}
