@@ -30,6 +30,11 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // Devices that get a notification for every new request (/admin → "Turn on new-request
+    // alerts"). The website reads them to send the alert; a push service only delivers messages
+    // signed with the server's private VAPID key, so reading them is harmless.
+    match /pushSubscriptions/{docId} { allow read: if true; allow write: if isAdmin(); }
+
     // Website content: readable by everyone (the public site shows it), writable by admins.
     match /site/{docId}          { allow read: if true; allow write: if isAdmin(); }
     match /projects/{docId}      { allow read: if true; allow write: if isAdmin(); }

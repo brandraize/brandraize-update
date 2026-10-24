@@ -9,13 +9,14 @@ import {
   type User,
 } from 'firebase/auth';
 import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { ExternalLink, Loader2, LogOut } from 'lucide-react';
+import { ExternalLink, Loader2, LogOut, MonitorDown } from 'lucide-react';
 import Logo from '@/components/Logo';
 import { auth, db } from '@/lib/firebase/client';
 import CollectionPanel from './CollectionPanel';
 import LeadsPanel, { type Lead } from './LeadsPanel';
 import ServicesPanel from './ServicesPanel';
 import { errorMessage, inputClass, labelClass, primaryButton } from './ui';
+import { showLeadAlert, useDesktopApp } from './useDesktopApp';
 
 const tabs = [
   { id: 'leads', label: 'Requests' },
@@ -136,9 +137,11 @@ function useLeads(user: User) {
           for (const change of snapshot.docChanges()) {
             if (change.type !== 'added') continue;
             const data = change.doc.data();
-            new Notification('New consultation request', {
-              body: `${data.name} · ${data.phone}${data.service ? ` · ${data.service}` : ''}`,
-            });
+            showLeadAlert(
+              change.doc.id,
+              `New request: ${data.name}`,
+              [data.phone, data.service].filter(Boolean).join(' · '),
+            ).catch(() => {});
           }
         }
         loaded.current = true;
@@ -154,9 +157,7 @@ function useLeads(user: User) {
 function Dashboard({ user }: { user: User }) {
   const [tab, setTab] = useState<TabId>('leads');
   const { leads, error } = useLeads(user);
-  const [alertsEnabled, setAlertsEnabled] = useState(
-    typeof Notification !== 'undefined' && Notification.permission === 'granted',
-  );
+  const app = useDesktopApp(user.email);
   const newCount = leads.filter((lead) => lead.status === 'new').length;
 
   // Show the number of unanswered requests in the browser tab.
@@ -164,9 +165,18 @@ function Dashboard({ user }: { user: User }) {
     document.title = `${newCount > 0 ? `(${newCount}) ` : ''}Brandraize Admin`;
   }, [newCount]);
 
-  const enableAlerts = async () => {
-    if (typeof Notification === 'undefined') return;
-    setAlertsEnabled((await Notification.requestPermission()) === 'granted');
+  // Chrome and Edge install in one click; other browsers need their own menu.
+  const installApp = () => {
+    if (app.canInstall) {
+      app.install();
+      return;
+    }
+    window.alert(
+      'To install the dashboard as an app:\n\n' +
+        '• Chrome or Edge: click the install icon at the right of the address bar.\n' +
+        '• Safari on Mac: File → Add to Dock.\n' +
+        '• iPhone or iPad: Share → Add to Home Screen.',
+    );
   };
 
   return (
@@ -176,6 +186,12 @@ function Dashboard({ user }: { user: User }) {
           <Logo className="h-12" priority />
           <div className="flex items-center gap-3 text-sm">
             <span className="hidden text-white/70 sm:inline">{user.email}</span>
+            {!app.installed && (
+              <button type="button" onClick={installApp} className="inline-flex items-center gap-1.5 rounded-full bg-gold-500 px-4 py-2 font-bold text-ink-950 hover:bg-gold-400">
+                <MonitorDown className="h-4 w-4" aria-hidden="true" />
+                Download desktop app
+              </button>
+            )}
             <a href="/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-2 font-bold hover:bg-white/10">
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               View site
@@ -209,7 +225,7 @@ function Dashboard({ user }: { user: User }) {
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         {tab === 'leads' && (
-          <LeadsPanel leads={leads} error={error} alertsEnabled={alertsEnabled} onEnableAlerts={enableAlerts} />
+          <LeadsPanel leads={leads} error={error} alerts={app.alerts} onEnableAlerts={app.enableAlerts} />
         )}
         {tab === 'services' && <ServicesPanel />}
         {tab === 'projects' && (

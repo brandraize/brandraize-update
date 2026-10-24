@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
-import { Bell, Download, Mail, Phone, Trash2 } from 'lucide-react';
+import { Bell, BellOff, BellRing, Download, Mail, Phone, Trash2 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { db } from '@/lib/firebase/client';
 import { cardClass, dangerButton, errorMessage, ghostButton } from './ui';
+import type { AlertsState } from './useDesktopApp';
 
 export type Lead = {
   id: string;
@@ -47,11 +48,11 @@ function exportCsv(leads: Lead[]) {
 type LeadsPanelProps = {
   leads: Lead[];
   error: string | null;
-  alertsEnabled: boolean;
-  onEnableAlerts: () => void;
+  alerts: AlertsState;
+  onEnableAlerts: () => Promise<void>;
 };
 
-export default function LeadsPanel({ leads, error, alertsEnabled, onEnableAlerts }: LeadsPanelProps) {
+export default function LeadsPanel({ leads, error, alerts, onEnableAlerts }: LeadsPanelProps) {
   const [filter, setFilter] = useState<Lead['status'] | 'all'>('all');
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -83,11 +84,27 @@ export default function LeadsPanel({ leads, error, alertsEnabled, onEnableAlerts
           ))}
         </div>
         <div className="flex flex-wrap gap-2">
-          {!alertsEnabled && (
-            <button type="button" onClick={onEnableAlerts} className={ghostButton}>
+          {alerts === 'off' && (
+            <button
+              type="button"
+              onClick={() => onEnableAlerts().catch((e) => setActionError(errorMessage(e)))}
+              className={ghostButton}
+            >
               <Bell className="h-4 w-4" aria-hidden="true" />
               Turn on new-request alerts
             </button>
+          )}
+          {alerts === 'on' && (
+            <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-800">
+              <BellRing className="h-4 w-4" aria-hidden="true" />
+              Alerts on for this device
+            </span>
+          )}
+          {alerts === 'blocked' && (
+            <span className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-sm font-bold text-amber-800">
+              <BellOff className="h-4 w-4" aria-hidden="true" />
+              Notifications are blocked: allow them in the browser&apos;s site settings (lock icon in the address bar)
+            </span>
           )}
           <button type="button" onClick={() => exportCsv(leads)} disabled={leads.length === 0} className={ghostButton}>
             <Download className="h-4 w-4" aria-hidden="true" />

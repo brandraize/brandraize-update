@@ -1,4 +1,6 @@
+import { after } from 'next/server';
 import { firebaseConfig, firestoreRest } from '@/lib/firebase/config';
+import { notifyAdmins } from '@/lib/push';
 import { site } from '@/lib/site';
 
 type Lead = {
@@ -56,6 +58,19 @@ async function saveToFirestore(lead: Lead) {
     body: JSON.stringify({ fields }),
   });
   if (!res.ok) throw new Error(`Firestore responded ${res.status}: ${await res.text()}`);
+
+  // Alert the admins' devices. The document id is the notification tag, so the dashboard's own
+  // alert for the same request (when it is open) replaces this one instead of doubling it.
+  const { name } = (await res.json()) as { name: string };
+  const id = name.split('/').pop()!;
+  after(() =>
+    notifyAdmins({
+      title: `New request: ${lead.name}`,
+      body: [lead.phone, lead.service].filter(Boolean).join(' · '),
+      tag: id,
+      url: '/admin',
+    }).catch((e) => console.error('Lead push failed:', e)),
+  );
 }
 
 async function sendWebhook(lead: Lead) {
